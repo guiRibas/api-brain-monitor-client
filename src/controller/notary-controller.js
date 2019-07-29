@@ -1,10 +1,16 @@
+const { validationResult } = require('express-validator');
+
 import Notary from './../models/notary';
 
 let checkId = (req, res) => {
-    let current_notary_id = parseInt(req.body.notaryId);
+    const errors = validationResult(req);
 
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: true, message: 'Error! Invalid ID.' });
+    }
+  
     let notary = new Notary();
-    notary.id = current_notary_id;
+    notary.id = req.body.notaryId;
     notary.findById(res);
 }
 
