@@ -1,22 +1,26 @@
-let validateReqRegister = (req, res, next) => {
-    let notaryId = parseInt(req.body.notaryId);
-    let password = req.body.password;
+import { check } from 'express-validator';
 
-    if (!notaryId || !password 
-        || !isLengthValid(notaryId, 1, 3) || !isLengthValid(password, 15, 25)
-        || notaryId < 1) 
-        return res.status(401).send({ auth: false, message: 'No attribute provided.' });
+let validate = (method) => {
+    switch (method) {
+        case 'validateId': {
+            return [
+                check('notaryId').exists().withMessage('Id not provided.'),
+                check('notaryId').isLength({ min: 1, max: 3}).withMessage('Id length is invalid.'),
+                check('notaryId').isInt().withMessage('Id type is invalid.'),
+                check('notaryId').custom((value) => value > 0).withMessage('Id value is invalid.')
+            ]
+        }
 
-    next();
-}
-
-let isLengthValid = (attribute, qtdMin, qtdMax) => {
-    if (attribute.length < qtdMin || attribute.length > qtdMax) {
-        return false;
+        case 'validatePassword': {
+            return [
+                check('password').exists().withMessage('Password not provided.'),
+                check('password').isLength({ min: 15, max: 25}).withMessage('Password length is invalid.'),
+                check('password').isString().withMessage('Password type is invalid.')
+            ]
+        }
     }
-    return true;
 }
 
 module.exports = {
-    validateReqRegister: validateReqRegister
+    validate: validate
 }

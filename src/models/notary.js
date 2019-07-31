@@ -1,4 +1,3 @@
-import { HashPassword } from '../middleware/hash-password-middleware'
 import connection from './../database/connection'
 
 class Notary {
@@ -34,46 +33,35 @@ class Notary {
         this._id_city = id_city;
     }
 
-    update(res) {
-        HashPassword.encrypt(this.token).then((result) => {
-            let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND api_token is NULL';
-            let query = connection.format(queryUpdate, ['registry', 'api_token', result, 'id', this.id]);
-            connection.query(query, (error, result) => {
-                if (error) throw error;
+    update() {
+        let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND api_token is NULL';
+        let query = connection.format(queryUpdate, ['registry', 'api_token', this.token, 'id', this.id]);
+        
+        return new Promise(async function(resolve, reject) {
+            try {
+                let result = await connection.query(query);
 
-                if (this.checkChangedRows(result['changedRows'])) {
-                    return res.send({
-                        error: false,
-                        message: 'Success! Api Token changed.'
-                    })
-                } else {
-                    return res.send({
-                        error: true,
-                        message: 'Error! Api Token has already been changed.'
-                    })
-                }
-            })
-        });
-    }
-
-    findById(res) {
-        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
-        let query = connection.format(queryFindById, ['name', 'registry', this.id]);
-        connection.query(query, (error, result) => {
-            if (error) throw error;
-            
-            return res.send({
-                error: false,
-                data: result,
-                message: 'Info. Please check if this ID ('+ this.id +') is your\'s.'
-            })
+                if (result[0]['changedRows'] == 1)
+                    resolve({code: 200, stt: 'success', msg: 'Api Token changed.'});
+                resolve({code: 500, stt: 'fail', msg: 'Api Token has already been changed.'});
+            } catch (err) {
+                reject(err);
+            }
         })
     }
 
-    checkChangedRows(rows) {
-        if (rows == 1)
-            return true
-        return false
+    findById() {
+        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
+        let query = connection.format(queryFindById, ['name', 'registry', this.id]);
+        
+        return new Promise(async function(resolve, reject) {
+            try {
+                let result = await connection.query(query);
+                resolve(result[0]);
+            } catch (err) {
+                reject(err);
+            }
+        })
     }
 };
 
