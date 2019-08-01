@@ -3,8 +3,7 @@ import * as argon2 from 'argon2';
 export class HashPassword {
     static async encrypt(password) {
         try {
-            const hash = await argon2.hash(password);
-            return hash;
+            return await argon2.hash(password);
         } catch (err) {
             return err;
         }

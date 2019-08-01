@@ -4,7 +4,6 @@ import validateTokenToCheckId from './middleware/token-middleware';
 import jwtMiddleware from './middleware/jwt-middleware';
 import dataMiddleware from './middleware/data-middleware';
 
-import loginController from './controller/login-controller';
 import notaryController from './controller/notary-controller';
 
 import logger from 'morgan';
@@ -16,18 +15,21 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.post('/api/notary/confirmId', [
+app.post('/api/v1/notary/confirmId', [
     validateTokenToCheckId,
     dataMiddleware.validate('validateId')
 ], notaryController.checkId);
 
-app.post('/api/notary/register', [
+app.post('/api/v1/notary/register', [
     validateTokenToCheckId,
     dataMiddleware.validate('validateId'),
     dataMiddleware.validate('validatePassword')
 ], notaryController.updateToken);
 
-app.post('/api/notary/authentication', loginController.validateLogin);
+app.post('/api/v1/notary/authentication', [
+    dataMiddleware.validate('validateId'),
+    dataMiddleware.validate('validatePassword')
+], notaryController.validateLogin);
 
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ' + app.get('port'));

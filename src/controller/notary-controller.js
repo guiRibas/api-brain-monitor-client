@@ -1,13 +1,9 @@
-const { validationResult } = require('express-validator');
-
+import validateRequest from '../helper/validate-request';
+import { HashPassword } from '../middleware/hash-password-middleware';
 import Notary from './../models/notary';
 
 async function checkId (req, res) {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 'fail', message: errors.array()[0]['msg'] });
-    }
+    validateRequest(req, res);
   
     let notary = new Notary();
     notary.id = req.body.notaryId;
@@ -27,15 +23,13 @@ async function checkId (req, res) {
 }
 
 async function updateToken (req, res) {
-    const errors = validationResult(req);
+    validateRequest(req, res);
 
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 'fail', message: errors.array()[0]['msg'] });
-    }
+    let passHash = await HashPassword.encrypt(req.body.password);
 
     let notary = new Notary();
     notary.id = req.body.notaryId;
-    notary.token = req.body.password;
+    notary.token = passHash;
     
     try {
         let result = await notary.update();
@@ -52,7 +46,12 @@ async function updateToken (req, res) {
     }
 }
 
+async function validateLogin (req, res) {
+    validateRequest(req, res);
+}
+
 module.exports = {
     checkId: checkId,
-    updateToken: updateToken
+    updateToken: updateToken,
+    validateLogin: validateLogin
 }

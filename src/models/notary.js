@@ -37,7 +37,7 @@ class Notary {
         let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND api_token is NULL';
         let query = connection.format(queryUpdate, ['registry', 'api_token', this.token, 'id', this.id]);
         
-        return new Promise(async function(resolve, reject) {
+        return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
 
@@ -54,7 +54,7 @@ class Notary {
         let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
         let query = connection.format(queryFindById, ['name', 'registry', this.id]);
         
-        return new Promise(async function(resolve, reject) {
+        return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
                 resolve(result[0]);
