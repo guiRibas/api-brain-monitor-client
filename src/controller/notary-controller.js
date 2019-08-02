@@ -1,24 +1,63 @@
 import Notary from './../models/notary';
 
-let checkId = (req, res) => {
-    let current_notary_id = parseInt(req.body.notaryId);
-
+async function checkId (req, res) {
     let notary = new Notary();
-    notary.id = current_notary_id;
-    notary.findById(res);
+    notary.id = req.body.notaryId;
+
+    try {
+        let result = await notary.findNameById();
+        return res.status(200).json({
+            status: 'success',
+            message: result
+        })
+    } catch (err) {
+        return res.status(500).json({
+            status: 'failed',
+            message: err['code']
+        })
+    }
 }
 
-let updateToken = (req, res) => {
-    let current_notary_id = parseInt(req.body.notaryId);
-    let current_pass = req.body.password;
-
+async function updateToken (req, res) {
     let notary = new Notary();
-    notary.id = current_notary_id;
-    notary.token = current_pass;
-    notary.update(res);
+    notary.id = req.body.notaryId;
+    notary.token = req.body.password;
+    
+    try {
+        let result = await notary.update();
+        return res.status(result['code']).json({
+            status: result['stt'],
+            message: result['msg']
+        })
+    } catch (err) {
+        return res.status(500).json({
+            status: 'failed',
+            message: err['code']
+        })
+    }
+}
+
+async function validateLogin (req, res) {   
+    let notary = new Notary();
+    notary.id = req.body.notaryId;
+    notary.token = req.body.password;
+
+    try {
+        let result = await notary.authenticate();
+        return res.status(result['code']).json({
+            status: result['stt'],
+            token: result['token']
+        })
+    } catch (err) {
+        return res.status(500).json({
+            status: 'failed',
+            message: err['code'] || 'Failed to authenticate'
+        })
+    }    
 }
 
 module.exports = {
     checkId: checkId,
-    updateToken: updateToken
+    updateToken: updateToken,
+    validateLogin: validateLogin
 }

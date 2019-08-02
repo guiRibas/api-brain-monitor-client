@@ -1,4 +1,6 @@
-import { HashPassword } from '../middleware/hash-password-middleware'
+import * as argon2 from 'argon2';
+import { sign } from 'jsonwebtoken';
+
 import connection from './../database/connection'
 
 class Notary {
@@ -34,46 +36,59 @@ class Notary {
         this._id_city = id_city;
     }
 
-    update(res) {
-        HashPassword.encrypt(this.token).then((result) => {
-            let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND api_token is NULL';
-            let query = connection.format(queryUpdate, ['registry', 'api_token', result, 'id', this.id]);
-            connection.query(query, (error, result) => {
-                if (error) throw error;
+    update() {        
+        return new Promise(async (resolve, reject) => {
+            try {
+                let passHash = await argon2.hash(this.token);
+                let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND api_token is NULL';
+                let query = connection.format(queryUpdate, ['registry', 'api_token', passHash, 'id', this.id]);
 
-                if (this.checkChangedRows(result['changedRows'])) {
-                    return res.send({
-                        error: false,
-                        message: 'Success! Api Token changed.'
-                    })
-                } else {
-                    return res.send({
-                        error: true,
-                        message: 'Error! Api Token has already been changed.'
-                    })
-                }
-            })
-        });
-    }
+                let result = await connection.query(query);
 
-    findById(res) {
-        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
-        let query = connection.format(queryFindById, ['name', 'registry', this.id]);
-        connection.query(query, (error, result) => {
-            if (error) throw error;
-            
-            return res.send({
-                error: false,
-                data: result,
-                message: 'Info. Please check if this ID ('+ this.id +') is your\'s.'
-            })
+                if (result[0]['changedRows'] == 1)
+                    resolve({code: 200, stt: 'success', msg: 'Api Token changed.'});
+                resolve({code: 500, stt: 'failed', msg: 'Api Token has already been changed.'});
+            } catch (err) {
+                reject(err);
+            }
         })
     }
 
-    checkChangedRows(rows) {
-        if (rows == 1)
-            return true
-        return false
+    findNameById() {
+        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
+        let query = connection.format(queryFindById, ['name', 'registry', this.id]);
+        
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = await connection.query(query);
+                resolve(result[0]);
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+
+    authenticate() {
+        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
+        let query = connection.format(queryFindById, ['api_token', 'registry', this.id]);
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = await connection.query(query);
+
+                if (await argon2.verify(result[0][0]['api_token'], this.token)) {
+                    var token = sign({ id: 10 }, process.env.SECRET, {
+                        expiresIn: 1440
+                    })
+
+                    resolve({code: 200, stt: 'success', token: token});
+                }
+
+                resolve({code: 500, stt: 'failed', token: 'User/Password may be incorrect'});
+            } catch (err) {
+                reject(err);
+            }
+        })
     }
 };
 

@@ -6,8 +6,10 @@ const dbConnPool = mysql.createPool({
     password: 'ximobnet',
     database: 'brain_ticket',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 100,
     queueLimit: 0
 });
 
-export default dbConnPool;
+const promisePool = dbConnPool.promise();
+
+export default promisePool;

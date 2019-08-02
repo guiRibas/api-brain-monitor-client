@@ -1,50 +1,41 @@
-import express, { Router } from 'express';
-import connection from './database/connection';
-
-import tokenMiddleware from './middleware/token-middleware';
-import jwtMiddleware from './middleware/jwt-middleware';
-import dataMiddleware from './middleware/data-middleware';
-
-import loginController from './controller/login-controller';
-import notaryController from './controller/notary-controller';
-
-import { json, urlencoded } from 'body-parser';
+import express from 'express';
 import logger from 'morgan';
 
-const router = Router();
+import notaryController from './controller/notary-controller';
+
+import validateTokenToCheckId from './middleware/token-middleware';
+import jwtMiddleware from './middleware/jwt-middleware';
+import dataMiddleware from './middleware/data-middleware';
+import { validateRequest } from './middleware/validate-request';
 
 const app = express();
 
 app.set('port', process.env.PORT || 8000);
 app.use(logger('dev'));
-app.use(json());
-app.use(urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-app.use('/', router);
+app.post('/api/v1/notary/confirmId', [
+    validateTokenToCheckId,
+    dataMiddleware.validate('validateId'),
+    validateRequest
+], notaryController.checkId);
 
-router.post('/api/notary/confirmId',
-    tokenMiddleware.validateTokenToCheckId, notaryController.checkId);
+app.post('/api/v1/notary/register', [
+    validateTokenToCheckId,
+    dataMiddleware.validate('validateId'),
+    dataMiddleware.validate('validatePassword'),
+    validateRequest
+], notaryController.updateToken);
 
-router.post('/api/notary/register',
-    dataMiddleware.validateReqRegister, notaryController.updateToken);
-
-router.post('/api/notary/authentication',
-    loginController.validateLogin);
-
-app.get('/user/:id', jwtMiddleware.checkJWT, (req, res) => {
-    let user_id = req.params.id;
-    if (!user_id) {
-        return res.status(400).send({ error: true, message: 'Please provide user_id' });
-    }
-
-    connection.query('SELECT * FROM credential where id = ?', user_id, function (error, results) {
-        if (error) throw error;
-        return res.send({ error: false, data: results[0], message: 'user provided.' });
-    })
-})
+app.post('/api/v1/notary/authentication', [
+    dataMiddleware.validate('validateId'),
+    dataMiddleware.validate('validatePassword'),
+    validateRequest
+], notaryController.validateLogin);
 
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ' + app.get('port'));
 });
- 
+
 export default app;
