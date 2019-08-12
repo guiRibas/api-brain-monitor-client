@@ -2,7 +2,7 @@ import Notary from './../models/notary';
 
 async function checkId (req, res) {
     let notary = new Notary();
-    notary.id = req.body.notaryId;
+    notary.id = req.params.id;
 
     try {
         let result = await notary.findNameById();

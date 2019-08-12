@@ -6,9 +6,9 @@ let validateTokenToCheckId = (req, res, next) => {
 
     if (token_auth === default_token){
         next();
+    } else {
+        return res.status(401).json({ status: 'failed', message: 'Failed to authenticate token.' });
     }
-
-    return res.status(401).json({ status: 'failed', message: 'Failed to authenticate token.' });
 }
 
 export default validateTokenToCheckId

@@ -2,16 +2,16 @@ import { check } from 'express-validator';
 
 let validate = (method) => {
     switch (method) {
-        case 'validateId': {
+        case 'id': {
             return [
-                check('notaryId').exists().withMessage('Id not provided.'),
-                check('notaryId').isLength({ min: 1, max: 3}).withMessage('Id length is invalid.'),
-                check('notaryId').isInt().withMessage('Id type is invalid.'),
-                check('notaryId').custom((value) => value > 0).withMessage('Id value is invalid.')
+                check('id').exists().withMessage('Id not provided.'),
+                check('id').isLength({ min: 1, max: 3}).withMessage('Id length is invalid.'),
+                check('id').isInt().withMessage('Id type is invalid.'),
+                check('id').custom((value) => value > 0).withMessage('Id value is invalid.')
             ]
         }
 
-        case 'validatePassword': {
+        case 'password': {
             return [
                 check('password').exists().withMessage('Password not provided.'),
                 check('password').isLength({ min: 15, max: 25}).withMessage('Password length is invalid.'),

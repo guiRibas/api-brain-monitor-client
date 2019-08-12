@@ -17,7 +17,7 @@ class Notary {
     }
 
     set name(name) {
-        this._name = name.toLowerCase();
+        this._name = name;
     }
 
     get token() {
@@ -61,7 +61,7 @@ class Notary {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(result[0]);
+                resolve(result[0][0]['name']);
             } catch (err) {
                 reject(err);
             }
@@ -77,7 +77,9 @@ class Notary {
                 let result = await connection.query(query);
 
                 if (await argon2.verify(result[0][0]['api_token'], this.token)) {
-                    var token = sign({ id: 10 }, process.env.SECRET, {
+                    let currentNotary = this.id;
+
+                    let token = sign({ foo: currentNotary }, process.env.SECRET, { algorithm: 'HS256'}, {
                         expiresIn: 1440
                     })
 
