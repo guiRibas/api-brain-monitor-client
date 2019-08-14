@@ -12,6 +12,22 @@ class Notary {
         this._id = id;
     }
 
+    get id_city() {
+        return this._id_city;
+    }
+
+    set id_city(id_city) {
+        this._id_city = id_city;
+    }
+
+    get id_employee() {
+        return this._id_employee;
+    }
+
+    set id_employee(id_employee) {
+        this._id_employee = id_employee;
+    }
+
     get name() {
         return this._name;
     }
@@ -20,26 +36,50 @@ class Notary {
         this._name = name;
     }
 
-    get token() {
-        return this._token;
+    get api_token() {
+        return this._api_token;
     }
 
-    set token(token) {
-        this._token = token;
+    set api_token(api_token) {
+        this._api_token = api_token;
     }
 
-    get city() {
-        return this._id_city;
+    get dedicated_server() {
+        return this._dedicated_server;
     }
 
-    set city(id_city) {
-        this._id_city = id_city;
+    set dedicated_server(dedicated_server) {
+        this._dedicated_server = dedicated_server;
     }
 
-    update() {        
+    get bkp_web_active() {
+        return this._bkp_web_active;
+    }
+
+    set bkp_web_active(bkp_web_active) {
+        this._bkp_web_active = bkp_web_active;
+    }
+
+    get bkp_web_path() {
+        return this._bkp_web_path;
+    }
+
+    set bkp_web_path(bkp_web_path) {
+        this._bkp_web_path = bkp_web_path;
+    }
+
+    get comments() {
+        return this._comments;
+    }
+
+    set comments(comments) {
+        this._comments = comments;
+    }
+
+    update() {
         return new Promise(async (resolve, reject) => {
             try {
-                let passHash = await argon2.hash(this.token);
+                let passHash = await argon2.hash(this.api_token);
                 let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND api_token is NULL';
                 let query = connection.format(queryUpdate, ['registry', 'api_token', passHash, 'id', this.id]);
 
@@ -76,7 +116,7 @@ class Notary {
             try {
                 let result = await connection.query(query);
 
-                if (await argon2.verify(result[0][0]['api_token'], this.token)) {
+                if (await argon2.verify(result[0][0]['api_token'], this.api_token)) {
                     let currentNotary = this.id;
 
                     let token = sign({ foo: currentNotary }, process.env.SECRET, { algorithm: 'HS256'}, {
