@@ -26,27 +26,49 @@ app.get('/api/notary/:id', [
     validateRequest
 ], notaryController.checkId);
 
-app.patch('/api/notary/register', [
+app.patch('/api/notary/:id/register', [
     validateTokenToCheckId,
     dataMiddleware.validate('id'),
-    dataMiddleware.validate('password'),
+    dataMiddleware.validateNotary('password'),
     validateRequest
 ], notaryController.updateToken);
 
 app.post('/api/notary/authentication', [
     dataMiddleware.validate('id'),
-    dataMiddleware.validate('password'),
+    dataMiddleware.validateNotary('password'),
     validateRequest
 ], notaryController.validateLogin);
+
+app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
+    dataMiddleware.validateNotary('active'),
+    dataMiddleware.validateNotary('path'),
+    validateRequest
+], notaryController.webBackup);
+
+app.post('/api/notary/sgbd', jwtMiddleware.check, [
+    dataMiddleware.validate('id'),
+    dataMiddleware.validateSgbd('description'),
+    dataMiddleware.validateSgbd('baseDirectory'),
+    dataMiddleware.validateSgbd('dataDirectory'),
+    dataMiddleware.validateSgbd('port'),
+    dataMiddleware.validateSgbd('dbName'),
+    dataMiddleware.validateSgbd('size'),
+    validateRequest
+]);
+
+app.post('/api/notary/sgbd/log', jwtMiddleware.check, [
+    dataMiddleware.validate('id'),
+    dataMiddleware.validateLog('content')
+]);
 
 app.put('/api/notary/discs', jwtMiddleware.check, function(req, res){
     console.log(req.body);
     res.send('Got a PUT request at /user');
 });
 
-app.post('/api/notary/database');
+app.post('/api/notary/:id/discs/:prefix/backup');
 
-app.post('/api/notary/backup');
+app.post('/api/notary/discs/backup/repository');
 
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ' + app.get('port'));
