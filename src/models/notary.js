@@ -12,36 +12,90 @@ class Notary {
         this._id = id;
     }
 
+    get id_city() {
+        return this._id_city;
+    }
+
+    set id_city(id_city) {
+        this._id_city = id_city;
+    }
+
+    get id_employee() {
+        return this._id_employee;
+    }
+
+    set id_employee(id_employee) {
+        this._id_employee = id_employee;
+    }
+
     get name() {
         return this._name;
     }
 
     set name(name) {
-        this._name = name.toLowerCase();
+        this._name = name;
     }
 
-    get token() {
-        return this._token;
+    get api_token() {
+        return this._api_token;
     }
 
-    set token(token) {
-        this._token = token;
+    set api_token(api_token) {
+        this._api_token = api_token;
     }
 
-    get city() {
-        return this._id_city;
+    get dedicated_server() {
+        return this._dedicated_server;
     }
 
-    set city(id_city) {
-        this._id_city = id_city;
+    set dedicated_server(dedicated_server) {
+        this._dedicated_server = dedicated_server;
     }
 
-    update() {        
+    get bkp_web_active() {
+        return this._bkp_web_active;
+    }
+
+    set bkp_web_active(bkp_web_active) {
+        this._bkp_web_active = bkp_web_active;
+    }
+
+    get bkp_web_path() {
+        return this._bkp_web_path;
+    }
+
+    set bkp_web_path(bkp_web_path) {
+        this._bkp_web_path = bkp_web_path;
+    }
+
+    get comments() {
+        return this._comments;
+    }
+
+    set comments(comments) {
+        this._comments = comments;
+    }
+
+    findNameById() {
+        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
+        let query = connection.format(queryFindById, ['nome', 'cartorio', this.id]);
+        
         return new Promise(async (resolve, reject) => {
             try {
-                let passHash = await argon2.hash(this.token);
+                let result = await connection.query(query);
+                resolve(result[0][0]['nome']);
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+
+    updateApiToken() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let passHash = await argon2.hash(this.api_token);
                 let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND api_token is NULL';
-                let query = connection.format(queryUpdate, ['registry', 'api_token', passHash, 'id', this.id]);
+                let query = connection.format(queryUpdate, ['cartorio', 'api_token', passHash, 'id', this.id]);
 
                 let result = await connection.query(query);
 
@@ -54,30 +108,18 @@ class Notary {
         })
     }
 
-    findNameById() {
-        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
-        let query = connection.format(queryFindById, ['name', 'registry', this.id]);
-        
-        return new Promise(async (resolve, reject) => {
-            try {
-                let result = await connection.query(query);
-                resolve(result[0]);
-            } catch (err) {
-                reject(err);
-            }
-        })
-    }
-
     authenticate() {
-        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
-        let query = connection.format(queryFindById, ['api_token', 'registry', this.id]);
+        let queryFindApiToken = 'SELECT ?? FROM ?? WHERE id = ?';
+        let query = connection.format(queryFindApiToken, ['api_token', 'cartorio', this.id]);
 
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
 
-                if (await argon2.verify(result[0][0]['api_token'], this.token)) {
-                    var token = sign({ id: 10 }, process.env.SECRET, {
+                if (await argon2.verify(result[0][0]['api_token'], this.api_token)) {
+                    let currentNotary = this.id;
+
+                    let token = sign({ foo: currentNotary }, process.env.SECRET, { algorithm: 'HS256'}, {
                         expiresIn: 1440
                     })
 
@@ -85,6 +127,28 @@ class Notary {
                 }
 
                 resolve({code: 500, stt: 'failed', token: 'User/Password may be incorrect'});
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+
+    updateWebBackup() {
+        let queryUpdateWebBackup = 'UPDATE ?? SET ?? = ?, ?? = ? WHERE ?? = ?';
+        let query = connection.format(queryUpdateWebBackup, 
+            ['cartorio',
+             'bkp_web_active', this.bkp_web_active,
+             'bkp_web_path', this.bkp_web_path,
+             'id', this.id],
+        );
+        
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = await connection.query(query);
+                console.log(result[0]['changedRows']);
+                if (result[0]['changedRows'] == 1)
+                    resolve({code: 200, stt: 'success', msg: 'Web Back Data updated.'});
+                resolve({code: 500, stt: 'failed', msg: 'Web Back Data was not updated.'});
             } catch (err) {
                 reject(err);
             }

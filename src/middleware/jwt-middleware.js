@@ -2,8 +2,8 @@ require('dotenv-safe').load();
 
 import { verify } from 'jsonwebtoken';
 
-let checkJWT = (req, res, next) => {
-    let token = req.headers['x-access-token'] || req.headers['authorization'];
+let check = (req, res, next) => {
+    let token = req.headers['authorization'];
     if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
     
     if (token.startsWith('Bearer ')) {
@@ -19,5 +19,5 @@ let checkJWT = (req, res, next) => {
 }
 
 module.exports = {
-    checkJWT: checkJWT
+    check: check
 }

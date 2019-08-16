@@ -2,7 +2,7 @@ import Notary from './../models/notary';
 
 async function checkId (req, res) {
     let notary = new Notary();
-    notary.id = req.body.notaryId;
+    notary.id = req.params.id;
 
     try {
         let result = await notary.findNameById();
@@ -20,11 +20,11 @@ async function checkId (req, res) {
 
 async function updateToken (req, res) {
     let notary = new Notary();
-    notary.id = req.body.notaryId;
-    notary.token = req.body.password;
+    notary.id = req.params.id;
+    notary.api_token = req.body.password;
     
     try {
-        let result = await notary.update();
+        let result = await notary.updateApiToken();
         return res.status(result['code']).json({
             status: result['stt'],
             message: result['msg']
@@ -39,8 +39,8 @@ async function updateToken (req, res) {
 
 async function validateLogin (req, res) {   
     let notary = new Notary();
-    notary.id = req.body.notaryId;
-    notary.token = req.body.password;
+    notary.id = req.body.id;
+    notary.api_token = req.body.password;
 
     try {
         let result = await notary.authenticate();
@@ -53,11 +53,32 @@ async function validateLogin (req, res) {
             status: 'failed',
             message: err['code'] || 'Failed to authenticate'
         })
-    }    
+    }
+}
+
+async function webBackup (req, res) {
+    let notary = new Notary();
+    notary.id = req.params.id;
+    notary.bkp_web_active = req.body.active;
+    notary.bkp_web_path = req.body.path;
+
+    try {
+        let result = await notary.updateWebBackup();
+        return res.status(result['code']).json({
+            status: result['stt'],
+            message: result['msg']
+        })
+    } catch (err) {
+        return res.status(500).json({
+            status: 'failed',
+            message: err['code'] || 'Failed to update Web Backup Data'
+        })
+    }
 }
 
 module.exports = {
     checkId: checkId,
     updateToken: updateToken,
-    validateLogin: validateLogin
+    validateLogin: validateLogin,
+    webBackup: webBackup
 }

@@ -4,7 +4,7 @@ const dbConnPool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: 'ximobnet',
-    database: 'brain_ticket',
+    database: 'monitoramento',
     waitForConnections: true,
     connectionLimit: 100,
     queueLimit: 0
