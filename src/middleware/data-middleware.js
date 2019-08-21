@@ -41,6 +41,12 @@ let validateNotary = (attribute) => {
 
 let validateSgbd = (attribute) => {
     switch (attribute) {
+        case 'id_notary': {
+            return [
+                check('id_notary').exists().withMessage('Notary not provided.'),
+                check('id_notary').isInt().withMessage('Notary type is invalid.')
+            ]
+        }
         case 'description': {
             return [
                 check('description').exists().withMessage('Description not provided.'),

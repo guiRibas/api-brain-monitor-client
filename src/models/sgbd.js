@@ -65,19 +65,51 @@ class Sgbd {
         this._size = size;
     }
 
-    create() {
-        let queryCreate = 'INSERT INTO ?? ?? ?? ?? ?? ?? ?? ?? VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        let query = connection.format(queryCreate,
-            ['id_cartorio', 'descricao', 'diretorio_instalacao', 'diretorio_banco', 'porta', 'db_nome', 'tamanho',
-             this.id_notary, this.description, this.baseDirectory, this.dataDirectory, this.port, this.size]);
+    create(total) {
+        let query;
+
+        if (total > 0) {
+            let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id_cartorio = ?';
+            query = connection.format(queryUpdate,
+            ['sgbd', 
+             'descricao', this.description, 
+             'diretorio_instalacao', this.baseDirectory,
+             'diretorio_banco', this.dataDirectory,
+             'porta', this.port,
+             'db_nome', this.dbName,
+             'tamanho', this.size,
+             this.idNotary]);
+        } else {
+            let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+            query = connection.format(queryCreate,
+            ['sgbd', 'id', 'id_cartorio', 'descricao', 'diretorio_instalacao', 'diretorio_banco', 'porta', 'db_nome', 'tamanho',
+             null, this.id_notary, this.description, this.baseDirectory, this.dataDirectory, this.port, this.dbName, this.size]);
+        }
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = await connection.query(query);
+                resolve(result);
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+
+    findByIdNotary() {
+        let queryFindByIdNotary = 'SELECT COUNT(*) as total FROM ?? WHERE ?? = ?';
+        let query = connection.format(queryFindByIdNotary, 
+            ['sgbd', 'id_cartorio', this.idNotary]);
         
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(result[0][0]['nome']);
+                resolve(result[0][0]['total']);
             } catch (err) {
                 reject(err);
             }
         })
     }
 }
+
+export default Sgbd;

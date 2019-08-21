@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 
 import notaryController from './controller/notary-controller';
+import sgbdController from './controller/sgbd-controller';
 
 import validateTokenToCheckId from './middleware/token-middleware';
 import jwtMiddleware from './middleware/jwt-middleware';
@@ -46,7 +47,7 @@ app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
 ], notaryController.webBackup);
 
 app.post('/api/notary/sgbd', jwtMiddleware.check, [
-    dataMiddleware.validate('id'),
+    dataMiddleware.validateSgbd('id_notary'),
     dataMiddleware.validateSgbd('description'),
     dataMiddleware.validateSgbd('baseDirectory'),
     dataMiddleware.validateSgbd('dataDirectory'),
@@ -54,7 +55,7 @@ app.post('/api/notary/sgbd', jwtMiddleware.check, [
     dataMiddleware.validateSgbd('dbName'),
     dataMiddleware.validateSgbd('size'),
     validateRequest
-]);
+], sgbdController.create);
 
 app.post('/api/notary/sgbd/log', jwtMiddleware.check, [
     dataMiddleware.validate('id'),
