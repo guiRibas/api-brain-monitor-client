@@ -1,5 +1,7 @@
 import connection from './../database/connection'
 
+import analyse from '../helper/analyse'
+
 class Sgbd {
     get id() {
         return this._id;
@@ -65,10 +67,10 @@ class Sgbd {
         this._size = size;
     }
 
-    create(total) {
+    create(countRows) {
         let query;
 
-        if (total > 0) {
+        if (countRows != undefined) {
             let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id_cartorio = ?';
             query = connection.format(queryUpdate,
             ['sgbd', 
@@ -89,24 +91,24 @@ class Sgbd {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(result);
+                resolve(analyse.analyseResult(result));
             } catch (err) {
-                reject(err);
+                reject(analyse.analyseError(err));
             }
         })
     }
 
     findByIdNotary() {
-        let queryFindByIdNotary = 'SELECT COUNT(*) as total FROM ?? WHERE ?? = ?';
+        let queryFindByIdNotary = 'SELECT id FROM ?? WHERE ?? = ?';
         let query = connection.format(queryFindByIdNotary, 
             ['sgbd', 'id_cartorio', this.idNotary]);
         
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(result[0][0]['total']);
+                resolve(result[0][0]);
             } catch (err) {
-                reject(err);
+                reject(analyse.analyseError(err));
             }
         })
     }

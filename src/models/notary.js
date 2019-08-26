@@ -76,20 +76,6 @@ class Notary {
         this._comments = comments;
     }
 
-    findNameById() {
-        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
-        let query = connection.format(queryFindById, ['nome', 'cartorio', this.id]);
-        
-        return new Promise(async (resolve, reject) => {
-            try {
-                let result = await connection.query(query);
-                resolve(result[0][0]['nome']);
-            } catch (err) {
-                reject(err);
-            }
-        })
-    }
-
     updateApiToken() {
         return new Promise(async (resolve, reject) => {
             try {
@@ -118,7 +104,6 @@ class Notary {
 
                 if (await argon2.verify(result[0][0]['api_token'], this.api_token)) {
                     let currentNotary = this.id;
-
                     let token = sign({ foo: currentNotary }, process.env.SECRET, { algorithm: 'HS256'}, {
                         expiresIn: 1440
                     })
@@ -145,10 +130,23 @@ class Notary {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                console.log(result[0]['changedRows']);
                 if (result[0]['changedRows'] == 1)
                     resolve({code: 200, stt: 'success', msg: 'Web Back Data updated.'});
                 resolve({code: 500, stt: 'failed', msg: 'Web Back Data was not updated.'});
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+
+    findNameById() {
+        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
+        let query = connection.format(queryFindById, ['nome', 'cartorio', this.id]);
+        
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = await connection.query(query);
+                resolve(result[0][0]['nome']);
             } catch (err) {
                 reject(err);
             }

@@ -1,6 +1,6 @@
 import Sgbd from './../models/sgbd';
 
-async function create (req, res) {
+async function create(req, res) {
     let sgbd = new Sgbd();
     sgbd.id_notary = req.body.id_notary;
     sgbd.description = req.body.description;
@@ -19,11 +19,24 @@ async function create (req, res) {
         })
     } catch (err) {
         return res.status(500).json({
-            message: err['code']
+            message: err
         })
     }
 }
 
+async function findByIdNotary(idNotary) {
+    let sgbd = new Sgbd();
+    sgbd.id_notary = idNotary;
+
+    try {
+        let result = await sgbd.findByIdNotary();
+        return result;
+    } catch (err) {
+        return err;
+    }
+}
+
 module.exports = {
-    create: create
+    create: create,
+    findByIdNotary: findByIdNotary
 }

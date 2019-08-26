@@ -5,6 +5,7 @@ import compression from 'compression';
 
 import notaryController from './controller/notary-controller';
 import sgbdController from './controller/sgbd-controller';
+import logController from './controller/log-controller';
 
 import validateTokenToCheckId from './middleware/token-middleware';
 import jwtMiddleware from './middleware/jwt-middleware';
@@ -58,9 +59,9 @@ app.post('/api/notary/sgbd', jwtMiddleware.check, [
 ], sgbdController.create);
 
 app.post('/api/notary/sgbd/log', jwtMiddleware.check, [
-    dataMiddleware.validate('id'),
+    dataMiddleware.validateSgbd('id_notary'),
     dataMiddleware.validateLog('content')
-]);
+], logController.create);
 
 app.put('/api/notary/discs', jwtMiddleware.check, function(req, res){
     console.log(req.body);
