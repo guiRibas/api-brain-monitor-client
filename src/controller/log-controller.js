@@ -5,9 +5,6 @@ import Log from './../models/log';
 async function create (req, res) {
     try {
         let sgbdId = await SgbdController.findByIdNotary(req.body.id_notary);
-        if (sgbdId == undefined) {
-            return res.status(500).json({ message: "Erro. Cartório informado não existe na base de dados!" })
-        }
 
         let log = new Log();
         log.id_sgbd = sgbdId['id'];
@@ -19,7 +16,7 @@ async function create (req, res) {
         })
     } catch (err) {
         return res.status(500).json({
-            message: err
+            message: err.message
         })
     }
 }

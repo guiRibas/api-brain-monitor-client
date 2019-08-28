@@ -91,7 +91,7 @@ class Sgbd {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(analyse.analyseResult(result));
+                resolve(analyse.analyseResult('Sgbd', result[0]));
             } catch (err) {
                 reject(analyse.analyseError(err));
             }
@@ -106,9 +106,10 @@ class Sgbd {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
+
                 resolve(result[0][0]);
             } catch (err) {
-                reject(analyse.analyseError(err));
+                reject(err);
             }
         })
     }

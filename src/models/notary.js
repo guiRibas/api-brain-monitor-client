@@ -1,7 +1,11 @@
+require('dotenv-safe').load();
+
 import * as argon2 from 'argon2';
 import { sign } from 'jsonwebtoken';
 
 import connection from './../database/connection'
+
+import analyse from './../helper/analyse'
 
 class Notary {
     get id() {
@@ -85,9 +89,7 @@ class Notary {
 
                 let result = await connection.query(query);
 
-                if (result[0]['changedRows'] == 1)
-                    resolve({code: 200, stt: 'success', msg: 'Api Token changed.'});
-                resolve({code: 500, stt: 'failed', msg: 'Api Token has already been changed.'});
+                resolve(analyse.analyseResult('Cartório', result[0]))
             } catch (err) {
                 reject(err);
             }
@@ -102,16 +104,18 @@ class Notary {
             try {
                 let result = await connection.query(query);
 
+                if (!result[0][0]) throw new Error ('Erro. Cartório informado não existe na base de dados!')
+
                 if (await argon2.verify(result[0][0]['api_token'], this.api_token)) {
                     let currentNotary = this.id;
-                    let token = sign({ foo: currentNotary }, process.env.SECRET, { algorithm: 'HS256'}, {
-                        expiresIn: 1440
+                    let token = sign({ foo: currentNotary }, process.env.SECRET, {
+                        expiresIn: "2h"
                     })
 
-                    resolve({code: 200, stt: 'success', token: token});
+                    resolve(token);
                 }
 
-                resolve({code: 500, stt: 'failed', token: 'User/Password may be incorrect'});
+                throw new Error ('User/Password may be incorrect');
             } catch (err) {
                 reject(err);
             }
@@ -130,9 +134,7 @@ class Notary {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                if (result[0]['changedRows'] == 1)
-                    resolve({code: 200, stt: 'success', msg: 'Web Back Data updated.'});
-                resolve({code: 500, stt: 'failed', msg: 'Web Back Data was not updated.'});
+                resolve(analyse.analyseResult('Cartório', result[0]))
             } catch (err) {
                 reject(err);
             }
@@ -146,7 +148,12 @@ class Notary {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(result[0][0]['nome']);
+
+                if (result[0][0] != undefined) {
+                    resolve(result[0][0]['nome']);
+                } else {
+                    throw new Error ('Erro. Cartório informado não existe na base de dados!')
+                }
             } catch (err) {
                 reject(err);
             }

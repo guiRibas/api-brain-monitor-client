@@ -19,7 +19,7 @@ async function create(req, res) {
         })
     } catch (err) {
         return res.status(500).json({
-            message: err
+            message: err.message || err
         })
     }
 }
@@ -29,10 +29,9 @@ async function findByIdNotary(idNotary) {
     sgbd.id_notary = idNotary;
 
     try {
-        let result = await sgbd.findByIdNotary();
-        return result;
+        return await sgbd.findByIdNotary();
     } catch (err) {
-        return err;
+        throw new Error (err.message);
     }
 }
 

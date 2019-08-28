@@ -35,7 +35,7 @@ class Log {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(analyse.analyseResult(result));
+                resolve(analyse.analyseResult('Log', result[0]));
             } catch (err) {
                 reject(analyse.analyseError(err));
             }
