@@ -1,6 +1,6 @@
 import { check } from 'express-validator';
 
-let validate = (attribute) => {
+let validateNotary = (attribute) => {
     switch (attribute) {
         case 'id': {
             return [
@@ -10,11 +10,7 @@ let validate = (attribute) => {
                 check('id').custom((value) => value > 0).withMessage('Id value is invalid.')
             ]
         }
-    }
-}
-
-let validateNotary = (attribute) => {
-    switch (attribute) {
+        
         case 'password': {
             return [
                 check('password').exists().withMessage('Password not provided.'),
@@ -103,9 +99,62 @@ let validateLog = (attribute) => {
     }
 }
 
+let validateDisk = (attribute) => {
+    switch (attribute) {
+        case 'name': {
+            return [
+                check('name').exists().withMessage('Name not provided.'),
+                check('name').isString().withMessage('Name type is invalid.')
+            ]
+        }
+
+        case 'type': {
+            return [
+                check('type').exists().withMessage('Type not provided.'),
+                check('type').isString().withMessage('Type type is invalid.')
+            ]
+        }
+
+        case 'filesystem': {
+            return [
+                check('filesystem').exists().withMessage('Filesystem not provided.'),
+                check('filesystem').isString().withMessage('Filesystem type is invalid.')
+            ]
+        }
+
+        case 'totalSpace': {
+            return [
+                check('totalSpace').exists().withMessage('Total Space not provided.'),
+                check('totalSpace').isString().withMessage('Total Space type is invalid.')
+            ]
+        }
+
+        case 'usedSpace': {
+            return [
+                check('usedSpace').exists().withMessage('Used Space not provided.'),
+                check('usedSpace').isString().withMessage('Used Space type is invalid.')
+            ]
+        }
+
+        case 'freeSpace': {
+            return [
+                check('freeSpace').exists().withMessage('Free Space not provided.'),
+                check('freeSpace').isString().withMessage('Free Space type is invalid.')
+            ]
+        }
+
+        case 'percentageOfUse': {
+            return [
+                check('percentageOfUse').exists().withMessage('Percentage Of Use not provided.'),
+                check('percentageOfUse').isString().withMessage('Percentage Of Use type is invalid.')
+            ]
+        }
+    }
+}
+
 module.exports = {
-    validate: validate,
     validateNotary: validateNotary,
     validateSgbd: validateSgbd,
-    validateLog: validateLog
+    validateLog: validateLog,
+    validateDisk: validateDisk
 }

@@ -6,6 +6,7 @@ import compression from 'compression';
 import notaryController from './controller/notary-controller';
 import sgbdController from './controller/sgbd-controller';
 import logController from './controller/log-controller';
+import diskController from './controller/disk-controller';
 
 import validateTokenToCheckId from './middleware/token-middleware';
 import jwtMiddleware from './middleware/jwt-middleware';
@@ -24,19 +25,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get('/api/notary/:id', [
-    dataMiddleware.validate('id'),
+    dataMiddleware.validateNotary('id'),
     validateRequest
 ], notaryController.checkId);
 
 app.patch('/api/notary/:id/register', [
     validateTokenToCheckId,
-    dataMiddleware.validate('id'),
+    dataMiddleware.validateNotary('id'),
     dataMiddleware.validateNotary('password'),
     validateRequest
 ], notaryController.updateToken);
 
 app.post('/api/notary/authentication', [
-    dataMiddleware.validate('id'),
+    dataMiddleware.validateNotary('id'),
     dataMiddleware.validateNotary('password'),
     validateRequest
 ], notaryController.validateLogin);
@@ -48,7 +49,7 @@ app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
 ], notaryController.webBackup);
 
 app.post('/api/notary/sgbd', jwtMiddleware.check, [
-    dataMiddleware.validateSgbd('id_notary'),
+    dataMiddleware.validateNotary('id'),
     dataMiddleware.validateSgbd('description'),
     dataMiddleware.validateSgbd('baseDirectory'),
     dataMiddleware.validateSgbd('dataDirectory'),
@@ -59,18 +60,24 @@ app.post('/api/notary/sgbd', jwtMiddleware.check, [
 ], sgbdController.create);
 
 app.post('/api/notary/sgbd/log', jwtMiddleware.check, [
-    dataMiddleware.validateSgbd('id_notary'),
+    dataMiddleware.validateNotary('id'),
     dataMiddleware.validateLog('content')
 ], logController.create);
 
-app.put('/api/notary/discs', jwtMiddleware.check, function(req, res){
-    console.log(req.body);
-    res.send('Got a PUT request at /user');
-});
+app.put('/api/notary/disc', jwtMiddleware.check, [
+    dataMiddleware.validateNotary('id'),
+    dataMiddleware.validateDisk('name'),
+    dataMiddleware.validateDisk('type'),
+    dataMiddleware.validateDisk('filesystem'),
+    dataMiddleware.validateDisk('totalSpace'),
+    dataMiddleware.validateDisk('usedSpace'),
+    dataMiddleware.validateDisk('freeSpace'),
+    dataMiddleware.validateDisk('percentageOfUse')
+], diskController.create);
 
-app.post('/api/notary/:id/discs/:prefix/backup');
+app.post('/api/notary/:id/disc/:prefix/backup');
 
-app.post('/api/notary/discs/backup/repository');
+app.post('/api/notary/disc/backup/repository');
 
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ' + app.get('port'));
