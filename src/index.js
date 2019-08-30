@@ -49,17 +49,14 @@ app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
 ], notaryController.webBackup);
 
 //ROUTES TO SGBD
-app.get('/api/notary/:id/sgbd', jwtMiddleware.check, [
-    validateMiddleware.notary('id'),
-], sgbdController.findByNotary);
+app.get('/api/sgbd', jwtMiddleware.check, sgbdController.findByNotary);
 
-app.post('/api/notary/sgbd', jwtMiddleware.check, [
-    validateMiddleware.notary('id'),
+app.post('/api/sgbd', jwtMiddleware.check, [
     validateMiddleware.sgbd(),
     validateRequest
 ], sgbdController.create);
 
-app.patch('/api/notary/sgbd/:id', jwtMiddleware.check, [
+app.patch('/api/sgbd', jwtMiddleware.check, [
     validateMiddleware.sgbd(),
     validateRequest
 ], sgbdController.update);
