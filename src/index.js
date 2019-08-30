@@ -10,7 +10,7 @@ import diskController from './controller/disk-controller';
 
 import validateTokenToCheckId from './middleware/token-middleware';
 import jwtMiddleware from './middleware/jwt-middleware';
-import dataMiddleware from './middleware/data-middleware';
+import validateMiddleware from './middleware/validate-middleware';
 import { validateRequest } from './middleware/validate-request';
 
 const app = express();
@@ -25,54 +25,55 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get('/api/notary/:id', [
-    dataMiddleware.validateNotary('id'),
+    validateMiddleware.notary('id'),
     validateRequest
 ], notaryController.checkId);
 
 app.patch('/api/notary/:id/register', [
     validateTokenToCheckId,
-    dataMiddleware.validateNotary('id'),
-    dataMiddleware.validateNotary('password'),
+    validateMiddleware.notary('id'),
+    validateMiddleware.notary('password'),
     validateRequest
 ], notaryController.updateToken);
 
 app.post('/api/notary/authentication', [
-    dataMiddleware.validateNotary('id'),
-    dataMiddleware.validateNotary('password'),
+    validateMiddleware.notary('id'),
+    validateMiddleware.notary('password'),
     validateRequest
 ], notaryController.validateLogin);
 
 app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
-    dataMiddleware.validateNotary('active'),
-    dataMiddleware.validateNotary('path'),
+    validateMiddleware.notary('active'),
+    validateMiddleware.notary('path'),
     validateRequest
 ], notaryController.webBackup);
 
+//ROUTES TO SGBD
+app.get('/api/notary/:id/sgbd', jwtMiddleware.check, [
+    validateMiddleware.notary('id'),
+], sgbdController.findByNotary);
+
 app.post('/api/notary/sgbd', jwtMiddleware.check, [
-    dataMiddleware.validateNotary('id'),
-    dataMiddleware.validateSgbd('description'),
-    dataMiddleware.validateSgbd('baseDirectory'),
-    dataMiddleware.validateSgbd('dataDirectory'),
-    dataMiddleware.validateSgbd('port'),
-    dataMiddleware.validateSgbd('dbName'),
-    dataMiddleware.validateSgbd('size'),
+    validateMiddleware.notary('id'),
+    validateMiddleware.sgbd(),
     validateRequest
 ], sgbdController.create);
 
+app.patch('/api/notary/sgbd/:id', jwtMiddleware.check, [
+    validateMiddleware.sgbd(),
+    validateRequest
+], sgbdController.update);
+
+//ROUTES TO LOG
 app.post('/api/notary/sgbd/log', jwtMiddleware.check, [
-    dataMiddleware.validateNotary('id'),
-    dataMiddleware.validateLog('content')
+    validateMiddleware.notary('id'),
+    validateMiddleware.log()
 ], logController.create);
 
-app.put('/api/notary/disc', jwtMiddleware.check, [
-    dataMiddleware.validateNotary('id'),
-    dataMiddleware.validateDisk('name'),
-    dataMiddleware.validateDisk('type'),
-    dataMiddleware.validateDisk('filesystem'),
-    dataMiddleware.validateDisk('totalSpace'),
-    dataMiddleware.validateDisk('usedSpace'),
-    dataMiddleware.validateDisk('freeSpace'),
-    dataMiddleware.validateDisk('percentageOfUse')
+//ROUTES TO DISK
+app.put('/api/notary/disk', jwtMiddleware.check, [
+    validateMiddleware.notary('id'),
+    validateMiddleware.disk()
 ], diskController.create);
 
 app.post('/api/notary/:id/disc/:prefix/backup');
