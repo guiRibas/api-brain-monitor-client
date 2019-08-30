@@ -7,13 +7,11 @@ async function checkId (req, res) {
     try {
         let result = await notary.findNameById();
         return res.status(200).json({
-            status: 'success',
             message: result
         })
     } catch (err) {
         return res.status(500).json({
-            status: 'failed',
-            message: err['code']
+            message: err.message
         })
     }
 }
@@ -25,14 +23,12 @@ async function updateToken (req, res) {
     
     try {
         let result = await notary.updateApiToken();
-        return res.status(result['code']).json({
-            status: result['stt'],
-            message: result['msg']
+        return res.status(200).json({
+            message: result
         })
     } catch (err) {
         return res.status(500).json({
-            status: 'failed',
-            message: err['code']
+            message: err.message
         })
     }
 }
@@ -44,14 +40,12 @@ async function validateLogin (req, res) {
 
     try {
         let result = await notary.authenticate();
-        return res.status(result['code']).json({
-            status: result['stt'],
-            token: result['token']
+        return res.status(200).json({
+            token: result
         })
     } catch (err) {
         return res.status(500).json({
-            status: 'failed',
-            message: err['code'] || 'Failed to authenticate'
+            message: err.message || 'Failed to authenticate'
         })
     }
 }
@@ -64,14 +58,12 @@ async function webBackup (req, res) {
 
     try {
         let result = await notary.updateWebBackup();
-        return res.status(result['code']).json({
-            status: result['stt'],
-            message: result['msg']
+        return res.status(200).json({
+            message: result
         })
     } catch (err) {
         return res.status(500).json({
-            status: 'failed',
-            message: err['code'] || 'Failed to update Web Backup Data'
+            message: err.message || 'Failed to update Web Backup Data'
         })
     }
 }

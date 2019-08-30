@@ -1,5 +1,7 @@
 import connection from './../database/connection'
 
+import analyse from '../helper/analyse'
+
 class Sgbd {
     get id() {
         return this._id;
@@ -65,19 +67,52 @@ class Sgbd {
         this._size = size;
     }
 
-    create() {
-        let queryCreate = 'INSERT INTO ?? ?? ?? ?? ?? ?? ?? ?? VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        let query = connection.format(queryCreate,
-            ['id_cartorio', 'descricao', 'diretorio_instalacao', 'diretorio_banco', 'porta', 'db_nome', 'tamanho',
-             this.id_notary, this.description, this.baseDirectory, this.dataDirectory, this.port, this.size]);
+    create(countRows) {
+        let query;
+
+        if (countRows != undefined) {
+            let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id_cartorio = ?';
+            query = connection.format(queryUpdate,
+            ['sgbd', 
+             'descricao', this.description, 
+             'diretorio_instalacao', this.baseDirectory,
+             'diretorio_banco', this.dataDirectory,
+             'porta', this.port,
+             'db_nome', this.dbName,
+             'tamanho', this.size,
+             this.idNotary]);
+        } else {
+            let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+            query = connection.format(queryCreate,
+            ['sgbd', 'id', 'id_cartorio', 'descricao', 'diretorio_instalacao', 'diretorio_banco', 'porta', 'db_nome', 'tamanho',
+             null, this.id_notary, this.description, this.baseDirectory, this.dataDirectory, this.port, this.dbName, this.size]);
+        }
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = await connection.query(query);
+                resolve(analyse.analyseResult('Sgbd', result[0]));
+            } catch (err) {
+                reject(analyse.analyseError(err));
+            }
+        })
+    }
+
+    findByIdNotary() {
+        let queryFindByIdNotary = 'SELECT id FROM ?? WHERE ?? = ?';
+        let query = connection.format(queryFindByIdNotary, 
+            ['sgbd', 'id_cartorio', this.idNotary]);
         
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(result[0][0]['nome']);
+
+                resolve(result[0][0]);
             } catch (err) {
                 reject(err);
             }
         })
     }
 }
+
+export default Sgbd;
