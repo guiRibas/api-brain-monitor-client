@@ -14,10 +14,10 @@ let analyseResult = (model, result) => {
     }
 }
 
-let analyseError = (err) => {
+let analyseError = (model, err) => {
     switch (err['code']) {
         case "ER_NO_REFERENCED_ROW_2": {
-            return 'Erro. Cartório informado não existe na base de dados!';
+            return 'Erro. ' + model + ' informado não existe na base de dados!';
         }
 
         case "ER_ACCESS_DENIED_ERROR": {

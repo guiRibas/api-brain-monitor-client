@@ -60,6 +60,9 @@ let sgbd = () => {
 
 let log = () => {
     return [
+        check('idSgbd').exists().withMessage('Sgbd not provided.'),
+        check('idSgbd').isInt().withMessage('Sgbd type is invalid.'),
+
         check('content').exists().withMessage('Content not provided.'),
         check('content').isString().withMessage('Content type is invalid.')
     ]

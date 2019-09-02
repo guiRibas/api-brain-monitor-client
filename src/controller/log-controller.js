@@ -4,10 +4,8 @@ import Log from './../models/log';
 
 async function create(req, res) {
     try {
-        let sgbdId = await SgbdController.findByIdNotary(req.body.id_notary);
-
         let log = new Log();
-        log.id_sgbd = sgbdId['id'];
+        log.id_sgbd = req.body.idSgbd;
         log.description = req.body.content;
 
         let result = await log.create();
@@ -16,7 +14,7 @@ async function create(req, res) {
         })
     } catch (err) {
         return res.status(500).json({
-            message: err.message
+            message: err.message || err
         })
     }
 }

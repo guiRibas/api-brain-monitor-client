@@ -63,7 +63,8 @@ app.patch('/api/sgbd', jwtMiddleware.check, [
 
 //ROUTES TO LOG
 app.post('/api/log', jwtMiddleware.check, [
-    validateMiddleware.log()
+    validateMiddleware.log(),
+    validateRequest
 ], logController.create);
 
 //ROUTES TO DISK
