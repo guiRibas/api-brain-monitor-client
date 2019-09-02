@@ -2,7 +2,7 @@ import SgbdController from './../controller/sgbd-controller';
 
 import Log from './../models/log';
 
-async function create (req, res) {
+async function create(req, res) {
     try {
         let sgbdId = await SgbdController.findByIdNotary(req.body.id_notary);
 

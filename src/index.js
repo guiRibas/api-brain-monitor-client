@@ -62,14 +62,12 @@ app.patch('/api/sgbd', jwtMiddleware.check, [
 ], sgbdController.update);
 
 //ROUTES TO LOG
-app.post('/api/notary/sgbd/log', jwtMiddleware.check, [
-    validateMiddleware.notary('id'),
+app.post('/api/log', jwtMiddleware.check, [
     validateMiddleware.log()
 ], logController.create);
 
 //ROUTES TO DISK
-app.put('/api/notary/disk', jwtMiddleware.check, [
-    validateMiddleware.notary('id'),
+app.put('/api/disk', jwtMiddleware.check, [
     validateMiddleware.disk()
 ], diskController.create);
 

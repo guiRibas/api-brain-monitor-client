@@ -15,8 +15,8 @@ class Log {
         return this._id_sgbd;
     }
 
-    set idSgbd(id_sgbd) {
-        this._id_sgbd = id_sgbd;
+    set idSgbd(idSgbd) {
+        this._idSgbd = idSgbd;
     }
 
     get description() {
