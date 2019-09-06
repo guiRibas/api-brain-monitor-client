@@ -6,7 +6,8 @@ import compression from 'compression';
 import notaryController from './controller/notary-controller';
 import sgbdController from './controller/sgbd-controller';
 import logController from './controller/log-controller';
-import diskController from './controller/disk-controller';
+import diskController from './controller/disc-controller';
+import backupController from './controller/backup-controller';
 
 import validateTokenToCheckId from './middleware/token-middleware';
 import jwtMiddleware from './middleware/jwt-middleware';
@@ -56,25 +57,60 @@ app.post('/api/sgbd', jwtMiddleware.check, [
     validateRequest
 ], sgbdController.create);
 
-app.patch('/api/sgbd', jwtMiddleware.check, [
+app.patch('/api/sgbd/:id', jwtMiddleware.check, [
     validateMiddleware.sgbd(),
     validateRequest
 ], sgbdController.update);
 
 //ROUTES TO LOG
+app.get('/api/log/sgbd/:id', jwtMiddleware.check, logController.findBySgbd);
+
 app.post('/api/log', jwtMiddleware.check, [
     validateMiddleware.log(),
     validateRequest
 ], logController.create);
 
 //ROUTES TO DISK
-app.put('/api/disk', jwtMiddleware.check, [
-    validateMiddleware.disk()
+app.get('/api/discs', jwtMiddleware.check, diskController.findByNotary);
+
+app.get('/api/disc/:label', jwtMiddleware.check, diskController.findByNotaryAndLabel);
+
+app.post('/api/disc', jwtMiddleware.check, [
+    validateMiddleware.disk(),
+    validateRequest
 ], diskController.create);
 
-app.post('/api/notary/:id/disc/:prefix/backup');
+app.patch('/api/disc/:id', jwtMiddleware.check, [
+    validateMiddleware.disk(),
+    validateRequest
+], diskController.update);
 
-app.post('/api/notary/disc/backup/repository');
+//ROUTES TO BACKUP
+app.get('/api/backup/disc/:id', jwtMiddleware.check, [
+    validateMiddleware.isInt('id'),
+    validateRequest
+], backupController.findByDisk);
+
+app.post('/api/backup', jwtMiddleware.check, [
+    validateMiddleware.isInt('idDisc'),
+    validateMiddleware.isString('path'),
+    validateMiddleware.isString('type'),
+    validateMiddleware.isString('size'),
+    validateMiddleware.isInt('qtdBaseBackup'),
+    validateMiddleware.isBoolean('hasController'),
+    validateMiddleware.isBoolean('hasCompression'),
+    validateMiddleware.isString('folderCreatedAt'),
+    validateMiddleware.isString('folderChangedAt'),
+    validateMiddleware.isString('folderVisitedAt'),
+    validateRequest
+], backupController.create);
+
+app.patch('/api/backup/:id', jwtMiddleware.check, [
+    validateMiddleware.isInt('id'),
+    validateRequest
+],backupController.update);
+
+//ROUTES TO REPOSITORY
 
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ' + app.get('port'));

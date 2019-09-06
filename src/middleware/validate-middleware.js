@@ -70,8 +70,8 @@ let log = () => {
 
 let disk = () => {
     return [
-        check('name').exists().withMessage('Name not provided.'),
-        check('name').isString().withMessage('Name type is invalid.'),
+        check('label').exists().withMessage('Label not provided.'),
+        check('label').isString().withMessage('Label type is invalid.'),
 
         check('type').exists().withMessage('Type not provided.'),
         check('type').isString().withMessage('Type type is invalid.'),
@@ -89,7 +89,31 @@ let disk = () => {
         check('freeSpace').isString().withMessage('Free Space type is invalid.'),
 
         check('percentageOfUse').exists().withMessage('Percentage Of Use not provided.'),
-        check('percentageOfUse').isString().withMessage('Percentage Of Use type is invalid.')
+        check('percentageOfUse').isInt().withMessage('Percentage Of Use type is invalid.')
+    ]
+}
+
+let isString = (attribute) => {
+    return [
+        check(attribute).exists().withMessage(attribute + ' não informado.'),
+        check(attribute).isString().withMessage(attribute + ' com tipo inválido.'),
+        check(attribute).isLength(1).withMessage(attribute + ' com tamanho inválido.')
+    ]
+}
+
+let isInt = (attribute) => {
+    return [
+        check(attribute).exists().withMessage(attribute + ' não informado.'),
+        check(attribute).isInt().withMessage(attribute + ' com tipo inválido.'),
+        check(attribute).isLength(1).withMessage(attribute + ' com tamanho inválido.')
+    ]
+}
+
+let isBoolean = (attribute) => {
+    return [
+        check(attribute).exists().withMessage(attribute + ' não informado.'),
+        check(attribute).isBoolean().withMessage(attribute + ' com tipo inválido.'),
+        check(attribute).isLength(1).withMessage(attribute + ' com tamanho inválido.')
     ]
 }
 
@@ -97,5 +121,8 @@ module.exports = {
     notary: notary,
     sgbd: sgbd,
     log: log,
-    disk: disk
+    disk: disk,
+    isString: isString,
+    isInt: isInt,
+    isBoolean: isBoolean
 }

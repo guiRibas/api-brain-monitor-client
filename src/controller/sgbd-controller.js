@@ -25,7 +25,7 @@ async function create(req, res) {
 
 async function update(req, res) {
     let sgbd = new Sgbd();
-    sgbd.id = req.decoded['foo'];
+    sgbd.id = req.params.id;
     sgbd.description = req.body.description;
     sgbd.baseDirectory = req.body.baseDirectory;
     sgbd.dataDirectory = req.body.dataDirectory;

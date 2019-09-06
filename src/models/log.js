@@ -12,7 +12,7 @@ class Log {
     }
 
     get idSgbd() {
-        return this._id_sgbd;
+        return this._idSgbd;
     }
 
     set idSgbd(idSgbd) {
@@ -38,6 +38,20 @@ class Log {
                 resolve(analyse.analyseResult('Log', result[0]));
             } catch (err) {
                 reject(analyse.analyseError('Sgbd', err));
+            }
+        })
+    }
+
+    findBySgbd() {
+        let queryFindByIdNotary = 'SELECT id, descricao FROM ?? WHERE ?? = ?';
+        let query = connection.format(queryFindByIdNotary, ['log', 'id_sgbd', this.idSgbd]);
+        
+        return new Promise(async (resolve, reject) => {
+            try {
+                let result = await connection.query(query);
+                resolve(result[0]);
+            } catch (err) {
+                reject(err);
             }
         })
     }
