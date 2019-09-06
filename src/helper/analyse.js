@@ -14,14 +14,14 @@ let analyseResult = (model, result) => {
     }
 }
 
-let analyseError = (model, err) => {
+let analyseError = (err) => {
     switch (err['code']) {
         case "ER_DUP_ENTRY": {
-            return {'code': err['errno'], 'status': 'Erro. ' + model + ' informado já existe na base de dados!'};
+            return {'code': err['errno'], 'status': 'Erro. Entrada duplicada.'};
         }
 
         case "ER_NO_REFERENCED_ROW_2": {
-            return {'code': err['errno'], 'status': 'Erro. ' + model + ' informado não existe na base de dados!'};
+            return {'code': err['errno'], 'status': 'Erro. Chave estrangeira não existe!'};
         }
 
         case "ER_ACCESS_DENIED_ERROR": {

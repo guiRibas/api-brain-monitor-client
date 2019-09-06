@@ -97,8 +97,6 @@ class Backup {
         ['backup', 'id', 'id_disk', 'path', 'type', 'size', 'qtd_base_backup', 'has_controller', 'has_compression', 'folder_created_at', 'folder_changed_at', 'folder_visited_at',
             null, this.idDisk, this.path, this.type, this.size, this.qtdBaseBackup, this.hasController, this.hasCompression, this.folderCreatedAt, this.folderChangedAt, this.folderVisitedAt]);
 
-        console.log(query);
-
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
