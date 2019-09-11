@@ -6,7 +6,7 @@ import compression from 'compression';
 import notaryController from './controller/notary-controller';
 import sgbdController from './controller/sgbd-controller';
 import logController from './controller/log-controller';
-import diskController from './controller/disc-controller';
+import diskController from './controller/disk-controller';
 import backupController from './controller/backup-controller';
 import repositoryController from './controller/repository-controller';
 
@@ -90,14 +90,14 @@ app.post('/api/log', jwtMiddleware.check, [
 ], logController.create);
 
 //ROUTES TO DISK
-app.get('/api/discs', jwtMiddleware.check, diskController.findByNotary);
+app.get('/api/disks', jwtMiddleware.check, diskController.findByNotary);
 
-app.get('/api/disc/:label', jwtMiddleware.check, [
-    validateMiddleware.isString('label'),
+app.get('/api/disk/:label', jwtMiddleware.check, [
+    validateMiddleware.isString('label', { min: 1, max: 3 }),
     validateRequest
 ], diskController.findByNotaryAndLabel);
 
-app.post('/api/disc', jwtMiddleware.check, [
+app.post('/api/disk', jwtMiddleware.check, [
     validateMiddleware.isString('label', { min: 1, max: 1 }),
     validateMiddleware.isString('type', { min: 5, max: 10 }),
     validateMiddleware.isString('filesystem', { min: 4, max: 5 }),
@@ -108,19 +108,19 @@ app.post('/api/disc', jwtMiddleware.check, [
     validateRequest
 ], diskController.create);
 
-app.patch('/api/disc/:id', jwtMiddleware.check, [
+app.patch('/api/disk/:id', jwtMiddleware.check, [
     validateMiddleware.isInt('id'),
     validateRequest
 ], diskController.update);
 
 //ROUTES TO BACKUP
-app.get('/api/backup/disc/:id', jwtMiddleware.check, [
+app.get('/api/backup/disk/:id', jwtMiddleware.check, [
     validateMiddleware.isInt('id'),
     validateRequest
 ], backupController.findByDisk);
 
 app.post('/api/backup', jwtMiddleware.check, [
-    validateMiddleware.isInt('idDisc'),
+    validateMiddleware.isInt('idDisk'),
     validateMiddleware.isString('path', { min: 10, max: 60 }),
     validateMiddleware.isString('type', { min: 4, max: 7 }),
     validateMiddleware.isString('size', { min: 5, max: 11 }),

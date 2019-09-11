@@ -78,7 +78,7 @@ class Disk {
     create() {
         let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
         let query = connection.format(queryCreate,
-        ['disco', 'id', 'id_cartorio', 'rotulo', 'tipo', 'sistema', 'capacidade', 'ocupado', 'livre', 'risco',
+        ['disk', 'id', 'id_cartorio', 'rotulo', 'tipo', 'sistema', 'capacidade', 'ocupado', 'livre', 'risco',
             null, this.idNotary, this.label, this.type, this.filesystem, this.totalSpace, this.usedSpace, this.freeSpace, this.percentageOfUse]);
 
         return new Promise(async (resolve, reject) => {
@@ -94,7 +94,7 @@ class Disk {
     update() {
         let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id = ?';
         let query = connection.format(queryUpdate,
-        ['disco',
+        ['disk',
             'tipo', this.type,
             'sistema', this.filesystem,
             'capacidade', this.totalSpace,
@@ -119,13 +119,13 @@ class Disk {
     findByNotary() {
         let queryFindByIdNotary = 'SELECT id, rotulo, tipo, sistema, capacidade, ocupado, livre, risco FROM ?? WHERE ?? = ?';
         let query = connection.format(queryFindByIdNotary, 
-            ['disco', 'id_cartorio', this.idNotary]);
+            ['disk', 'id_cartorio', this.idNotary]);
         
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
 
-                resolve(result[0][0]);
+                resolve(result[0]);
             } catch (err) {
                 reject(err);
             }
@@ -135,7 +135,7 @@ class Disk {
     findByNotaryAndLabel() {
         let queryFindByIdNotary = 'SELECT id FROM ?? WHERE ?? = ? AND ?? = ?';
         let query = connection.format(queryFindByIdNotary, 
-            ['disco', 'id_cartorio', this.idNotary, 'rotulo', this.label]);
+            ['disk', 'id_cartorio', this.idNotary, 'rotulo', this.label]);
         
         return new Promise(async (resolve, reject) => {
             try {

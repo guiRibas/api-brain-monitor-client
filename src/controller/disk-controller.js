@@ -1,4 +1,4 @@
-import Disk from '../models/disc';
+import Disk from '../models/disk';
 
 async function create(req, res) {
     let disk = new Disk();
