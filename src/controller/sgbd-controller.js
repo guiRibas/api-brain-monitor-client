@@ -2,7 +2,7 @@ import Sgbd from './../models/sgbd';
 
 async function create(req, res) {
     let sgbd = new Sgbd();
-    sgbd.idNotary = req.body.id;
+    sgbd.idNotary = req.decoded['foo'];
     sgbd.description = req.body.description;
     sgbd.baseDirectory = req.body.baseDirectory;
     sgbd.dataDirectory = req.body.dataDirectory;
@@ -48,7 +48,7 @@ async function update(req, res) {
 
 async function findByNotary(req, res) {
     let sgbd = new Sgbd();
-    sgbd.idNotary = req.params.id;
+    sgbd.idNotary = req.decoded['foo'];
 
     try {
         let result = await sgbd.findByNotary();

@@ -76,10 +76,9 @@ class Sgbd {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                let message = {'message': 'Info. Dados do SGBD cadastrados com sucesso!', 'sgbdId': result[0]['insertId']};
-                resolve(message);
+                resolve(analyse.analyseResult('Sgbd', result[0]));
             } catch (err) {
-                reject(analyse.analyseError(err));
+                reject(analyse.analyseError('Sgbd', err));
             }
         })
     }
@@ -99,9 +98,9 @@ class Sgbd {
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
-                resolve(result);
+                resolve(analyse.analyseResult('Sgbd', result[0]));
             } catch (err) {
-                reject(analyse.analyseError(err));
+                reject(analyse.analyseError('Sgbd', err));
             }
         })
     }
