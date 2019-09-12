@@ -70,15 +70,15 @@ class Sgbd {
     create() {
         let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         let query = connection.format(queryCreate,
-        ['sgbd', 'id', 'id_cartorio', 'descricao', 'diretorio_instalacao', 'diretorio_banco', 'porta', 'db_nome', 'tamanho',
+        ['sgbd', 'id', 'id_notary', 'description', 'base_directory', 'data_directory', 'port', 'db_name', 'size',
             null, this.idNotary, this.description, this.baseDirectory, this.dataDirectory, this.port, this.dbName, this.size]);
-
+        
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
                 resolve(analyse.analyseResult('Sgbd', result[0]));
             } catch (err) {
-                reject(analyse.analyseError('Sgbd', err));
+                reject(analyse.analyseError(err));
             }
         })
     }
@@ -87,12 +87,12 @@ class Sgbd {
         let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id = ?';
         let query = connection.format(queryUpdate,
         ['sgbd', 
-            'descricao', this.description,
-            'diretorio_instalacao', this.baseDirectory,
-            'diretorio_banco', this.dataDirectory,
-            'porta', this.port,
-            'db_nome', this.dbName,
-            'tamanho', this.size,
+            'description', this.description,
+            'base_directory', this.baseDirectory,
+            'data_directory', this.dataDirectory,
+            'port', this.port,
+            'db_name', this.dbName,
+            'size', this.size,
             this.id]);
 
         return new Promise(async (resolve, reject) => {
@@ -100,14 +100,14 @@ class Sgbd {
                 let result = await connection.query(query);
                 resolve(analyse.analyseResult('Sgbd', result[0]));
             } catch (err) {
-                reject(analyse.analyseError('Sgbd', err));
+                reject(analyse.analyseError(err));
             }
         })
     }
 
     findByNotary() {
-        let queryFindByIdNotary = 'SELECT id FROM ?? WHERE ?? = ?';
-        let query = connection.format(queryFindByIdNotary, ['sgbd', 'id_cartorio', this.idNotary]);
+        let queryFindByIdNotary = 'SELECT id, description, base_directory, data_directory, port, db_name, size FROM ?? WHERE ?? = ?';
+        let query = connection.format(queryFindByIdNotary, ['sgbd', 'id_notary', this.idNotary]);
         
         return new Promise(async (resolve, reject) => {
             try {

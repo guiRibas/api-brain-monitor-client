@@ -54,15 +54,15 @@ app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
 ], notaryController.webBackup);
 
 //ROUTES TO SGBD
-app.get('/api/sgbds', jwtMiddleware.check, sgbdController.findByNotary);
+app.get('/api/sgbd', jwtMiddleware.check, sgbdController.findByNotary);
 
 app.post('/api/sgbd', jwtMiddleware.check, [
     validateMiddleware.isString('description', { min: 10, max: 60 }),
     validateMiddleware.isString('baseDirectory', { min: 10, max: 60 }),
     validateMiddleware.isString('dataDirectory', { min: 10, max: 60 }),
     validateMiddleware.isInt('port', { min: 4, max: 5 }),
-    validateMiddleware.isString('dbName', { min: 10, max: 30 }),
-    validateMiddleware.isString('size', { min: 5, max: 11 }),
+    validateMiddleware.isString('dbName', { min: 4, max: 30 }),
+    validateMiddleware.isString('size', { min: 4, max: 11 }),
     validateRequest
 ], sgbdController.create);
 
@@ -72,8 +72,8 @@ app.patch('/api/sgbd/:id', jwtMiddleware.check, [
     validateMiddleware.isString('baseDirectory', { min: 10, max: 60 }),
     validateMiddleware.isString('dataDirectory', { min: 10, max: 60 }),
     validateMiddleware.isInt('port', { min: 4, max: 5 }),
-    validateMiddleware.isString('dbName', { min: 10, max: 30 }),
-    validateMiddleware.isString('size', { min: 5, max: 11 }),
+    validateMiddleware.isString('dbName', { min: 4, max: 30 }),
+    validateMiddleware.isString('size', { min: 4, max: 11 }),
     validateRequest
 ], sgbdController.update);
 
