@@ -78,7 +78,7 @@ class Disk {
     create() {
         let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
         let query = connection.format(queryCreate,
-        ['disk', 'id', 'id_cartorio', 'rotulo', 'tipo', 'sistema', 'capacidade', 'ocupado', 'livre', 'risco',
+        ['disk', 'id', 'id_notary', 'label', 'type', 'filesystem', 'total_space', 'used_space', 'free_space', 'percentage_of_use',
             null, this.idNotary, this.label, this.type, this.filesystem, this.totalSpace, this.usedSpace, this.freeSpace, this.percentageOfUse]);
 
         return new Promise(async (resolve, reject) => {
@@ -92,18 +92,14 @@ class Disk {
     }
 
     update() {
-        let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id = ?';
+        let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id = ?';
         let query = connection.format(queryUpdate,
         ['disk',
-            'tipo', this.type,
-            'sistema', this.filesystem,
-            'capacidade', this.totalSpace,
-            'ocupado', this.usedSpace,
-            'livre', this.freeSpace,
-            'risco', this.percentageOfUse,
+            'total_space', this.totalSpace,
+            'used_space', this.usedSpace,
+            'free_space', this.freeSpace,
+            'percentage_of_use', this.percentageOfUse,
             this.id]);
-
-        console.log(query);
 
         return new Promise(async (resolve, reject) => {
             try {
@@ -117,9 +113,9 @@ class Disk {
     }
 
     findByNotary() {
-        let queryFindByIdNotary = 'SELECT id, rotulo, tipo, sistema, capacidade, ocupado, livre, risco FROM ?? WHERE ?? = ?';
+        let queryFindByIdNotary = 'SELECT id, label, type, filesystem, total_space, used_space, free_space, percentage_of_use FROM ?? WHERE ?? = ?';
         let query = connection.format(queryFindByIdNotary, 
-            ['disk', 'id_cartorio', this.idNotary]);
+            ['disk', 'id_notary', this.idNotary]);
         
         return new Promise(async (resolve, reject) => {
             try {
@@ -135,7 +131,7 @@ class Disk {
     findByNotaryAndLabel() {
         let queryFindByIdNotary = 'SELECT id FROM ?? WHERE ?? = ? AND ?? = ?';
         let query = connection.format(queryFindByIdNotary, 
-            ['disk', 'id_cartorio', this.idNotary, 'rotulo', this.label]);
+            ['disk', 'id_notary', this.idNotary, 'label', this.label]);
         
         return new Promise(async (resolve, reject) => {
             try {

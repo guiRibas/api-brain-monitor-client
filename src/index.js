@@ -92,8 +92,8 @@ app.post('/api/log', jwtMiddleware.check, [
 //ROUTES TO DISK
 app.get('/api/disks', jwtMiddleware.check, diskController.findByNotary);
 
-app.get('/api/disk/:label', jwtMiddleware.check, [
-    validateMiddleware.isString('label', { min: 1, max: 3 }),
+app.get('/api/disk/label/:label', jwtMiddleware.check, [
+    validateMiddleware.isString('label', { min: 1, max: 2 }),
     validateRequest
 ], diskController.findByNotaryAndLabel);
 
@@ -110,6 +110,10 @@ app.post('/api/disk', jwtMiddleware.check, [
 
 app.patch('/api/disk/:id', jwtMiddleware.check, [
     validateMiddleware.isInt('id'),
+    validateMiddleware.isString('totalSpace', { min: 5, max: 11 }),
+    validateMiddleware.isString('usedSpace', { min: 5, max: 11 }),
+    validateMiddleware.isString('freeSpace', { min: 5, max: 11 }),
+    validateMiddleware.isInt('percentageOfUse', { min: 1, max: 3 }),
     validateRequest
 ], diskController.update);
 

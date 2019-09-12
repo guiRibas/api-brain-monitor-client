@@ -27,8 +27,6 @@ async function create(req, res) {
 async function update(req, res) {
     let disk = new Disk();
     disk.id = req.params.id;
-    disk.type = req.body.type;
-    disk.filesystem = req.body.filesystem;
     disk.totalSpace = req.body.totalSpace;
     disk.usedSpace = req.body.usedSpace;
     disk.freeSpace = req.body.freeSpace;
