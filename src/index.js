@@ -139,6 +139,13 @@ app.post('/api/backup', jwtMiddleware.check, [
 
 app.patch('/api/backup/:id', jwtMiddleware.check, [
     validateMiddleware.isInt('id'),
+    validateMiddleware.isString('size', { min: 5, max: 11 }),
+    validateMiddleware.isInt('qtdBaseBackup', { min: 1, max: 2 }),
+    validateMiddleware.isBoolean('hasController'),
+    validateMiddleware.isBoolean('hasCompression'),
+    validateMiddleware.isString('folderCreatedAt'),
+    validateMiddleware.isString('folderChangedAt'),
+    validateMiddleware.isString('folderVisitedAt'),
     validateRequest
 ], backupController.update);
 
