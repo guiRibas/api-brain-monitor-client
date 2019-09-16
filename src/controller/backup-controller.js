@@ -2,7 +2,7 @@ import Backup from './../models/backup';
 
 async function create(req, res) {
     let backup = new Backup();
-    backup.idDisk = req.body.idDisc;
+    backup.idDisk = req.body.idDisk;
     backup.path = req.body.path;
     backup.type = req.body.type;
     backup.size = req.body.size;

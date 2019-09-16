@@ -1,6 +1,6 @@
 import { check } from 'express-validator';
 
-let isInt = (attribute, length = 1) => {
+let isInt = (attribute, length = { min: 1, max: 3 }) => {
     return [
         check(attribute).exists().withMessage(attribute + ' não informado.'),
         check(attribute).isInt().withMessage(attribute + ' com tipo inválido.'),
@@ -9,7 +9,7 @@ let isInt = (attribute, length = 1) => {
     ]
 }
 
-let isString = (attribute, length = 1) => {
+let isString = (attribute, length = { min: 15, max: 25 }) => {
     return [
         check(attribute).exists().withMessage(attribute + ' não informado.'),
         check(attribute).isString().withMessage(attribute + ' com tipo inválido.'),
@@ -17,7 +17,7 @@ let isString = (attribute, length = 1) => {
     ]
 }
 
-let isBoolean = (attribute, length = 1) => {
+let isBoolean = (attribute, length = { min: 4, max: 5 }) => {
     return [
         check(attribute).exists().withMessage(attribute + ' não informado.'),
         check(attribute).isBoolean().withMessage(attribute + ' com tipo inválido.'),

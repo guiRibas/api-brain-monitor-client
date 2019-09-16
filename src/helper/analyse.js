@@ -1,12 +1,14 @@
-let analyseResult = (model, result) => {    
-    switch (result['changedRows']) {
-        case 0: {
-            return {'code': result, 'status': 'Erro. Dados informados do ' + model + ' já constam na base de dados!'};
-        }
+let analyseResult = (model, result) => {
+    if (result['affectedRows'] == 0 && result['changedRows'] == 0) {
+        return {'status': 'Erro. ' + model + ' ainda não possui dados!'};
+    }
 
-        case 1: {
-            return {'code': result, 'status': 'Info. Dados do ' + model + ' atualizados com sucesso!'};
-        }
+    if (result['affectedRows'] == 1 && result['changedRows'] == 1) {
+        return {'status': 'Info. Dados do ' + model + ' atualizados com sucesso!'};
+    }
+
+    if (result['affectedRows'] == 1 && result['changedRows'] == 0) {
+        return {'status': 'Erro. Dados informados do ' + model + ' já constam na base de dados!'};
     }
 
     if (result['insertId'] > 0) {
