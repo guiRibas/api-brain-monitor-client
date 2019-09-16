@@ -166,11 +166,6 @@ app.post('/api/repository', jwtMiddleware.check, [
     validateRequest
 ], repositoryController.create);
 
-app.patch('/api/repository/:id', jwtMiddleware.check, [
-    validateMiddleware.isInt('id'),
-    validateRequest
-], repositoryController.update);
-
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ' + app.get('port'));
 });

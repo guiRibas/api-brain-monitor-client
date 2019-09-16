@@ -70,10 +70,8 @@ class Repository {
     create() {
         let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         let query = connection.format(queryCreate,
-        ['repositorio', 'id', 'id_backup', 'description', 'qtd_partial', 'size', 'first_partial_at', 'last_partial_at', 'data_created_at',
+        ['repository', 'id', 'id_backup', 'description', 'qtd_partial', 'size', 'first_partial_at', 'last_partial_at', 'data_created_at',
             null, this.idBackup, this.description, this.qtdPartial, this.size, this.firstPartialAt, this.lastPartialAt, this.dataCreatedAt]);
-
-        console.log(query);
 
         return new Promise(async (resolve, reject) => {
             try {
@@ -88,7 +86,7 @@ class Repository {
     update() {
         let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id = ?';
         let query = connection.format(queryUpdate,
-        ['repositorio',
+        ['repository',
             'description', this.description,
             'qtd_partial', this.qtdPartial,
             'size', this.size,
@@ -109,15 +107,15 @@ class Repository {
     }
 
     findByBackup() {
-        let queryFindByIdNotary = 'SELECT id, description, qtd_partial, size, first_partial_at, last_partial_at, data_created_at FROM ?? WHERE ?? = ?';
+        let queryFindByIdNotary = 'SELECT id, description, size, first_partial_at, last_partial_at, data_created_at FROM ?? WHERE id_backup = ? AND DATE(created_at) = (SELECT max(DATE(created_at)) FROM repositorio WHERE id_backup = ?) ORDER BY created_at DESC';
         let query = connection.format(queryFindByIdNotary,
-            ['repositorio', 'id_backup', this.idBackup]);
+            ['repository', this.idBackup, this.idBackup]);
         
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
 
-                resolve(result[0][0]);
+                resolve(result[0]);
             } catch (err) {
                 reject(err);
             }
