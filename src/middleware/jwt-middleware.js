@@ -1,6 +1,7 @@
 require('dotenv-safe').load();
 
 import { verify } from 'jsonwebtoken';
+import RequestLogController from './../controller/request-log-controller'; 
 
 let check = (req, res, next) => {
     let token = req.headers['authorization'];
@@ -14,6 +15,8 @@ let check = (req, res, next) => {
         if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
 
         req.decoded = decoded;
+        RequestLogController.create(req, res);
+
         next();
     });
 }
