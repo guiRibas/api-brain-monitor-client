@@ -19,7 +19,7 @@ async function checkId (req, res) {
 async function updateToken (req, res) {
     let notary = new Notary();
     notary.id = req.params.id;
-    notary.api_token = req.body.password;
+    notary.api_password = req.body.password;
     
     try {
         let result = await notary.updateApiToken();
@@ -36,7 +36,7 @@ async function updateToken (req, res) {
 async function validateLogin (req, res) {   
     let notary = new Notary();
     notary.id = req.body.id;
-    notary.api_token = req.body.password;
+    notary.api_password = req.body.password;
 
     try {
         let result = await notary.authenticate();
@@ -53,8 +53,8 @@ async function validateLogin (req, res) {
 async function webBackup (req, res) {
     let notary = new Notary();
     notary.id = req.params.id;
-    notary.bkp_web_active = req.body.active;
-    notary.bkp_web_path = req.body.path;
+    notary.web_bkp_status = req.body.status;
+    notary.web_bkp_path = req.body.path;
 
     try {
         let result = await notary.updateWebBackup();
