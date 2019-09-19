@@ -44,7 +44,7 @@ class RequestLog {
     create() {
         let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?)';
         let query = connection.format(queryCreate,
-        ['request_log', 'id', 'id_notary', 'url', 'method', 'sender',
+        ['request_log', 'id', 'id_registry', 'url', 'method', 'sender',
             null, this.idNotary, this.url, this.method, this.sender]);
 
         return new Promise(async (resolve, reject) => {
