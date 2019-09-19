@@ -84,8 +84,8 @@ class Notary {
         return new Promise(async (resolve, reject) => {
             try {
                 let passHash = await argon2.hash(this.api_token);
-                let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND api_token is NULL';
-                let query = connection.format(queryUpdate, ['cartorio', 'api_token', passHash, 'id', this.id]);
+                let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND ?? is NULL';
+                let query = connection.format(queryUpdate, ['registry', 'api_password', passHash, 'id', this.id, 'api_password']);
 
                 let result = await connection.query(query);
 
@@ -97,8 +97,8 @@ class Notary {
     }
 
     authenticate() {
-        let queryFindApiToken = 'SELECT ?? FROM ?? WHERE id = ?';
-        let query = connection.format(queryFindApiToken, ['api_token', 'cartorio', this.id]);
+        let queryFindApiToken = 'SELECT ?? FROM ?? WHERE ?? = ?';
+        let query = connection.format(queryFindApiToken, ['api_password', 'registry', 'id', this.id]);
 
         return new Promise(async (resolve, reject) => {
             try {
@@ -106,7 +106,7 @@ class Notary {
 
                 if (!result[0][0]) throw new Error ('Erro. Cartório informado não existe na base de dados!')
 
-                if (await argon2.verify(result[0][0]['api_token'], this.api_token)) {
+                if (await argon2.verify(result[0][0]['api_password'], this.api_token)) {
                     let currentNotary = this.id;
                     let token = sign({ foo: currentNotary }, process.env.SECRET, {
                         expiresIn: "2h"
@@ -125,9 +125,9 @@ class Notary {
     updateWebBackup() {
         let queryUpdateWebBackup = 'UPDATE ?? SET ?? = ?, ?? = ? WHERE ?? = ?';
         let query = connection.format(queryUpdateWebBackup, 
-            ['cartorio',
-             'bkp_web_active', this.bkp_web_active,
-             'bkp_web_path', this.bkp_web_path,
+            ['registry',
+             'web_bkp_status', this.bkp_web_active,
+             'web_bkp_path', this.bkp_web_path,
              'id', this.id],
         );
         
@@ -142,15 +142,15 @@ class Notary {
     }
 
     findNameById() {
-        let queryFindById = 'SELECT ?? FROM ?? WHERE id = ?';
-        let query = connection.format(queryFindById, ['nome', 'cartorio', this.id]);
+        let queryFindById = 'SELECT ?? FROM ?? WHERE ?? = ?';
+        let query = connection.format(queryFindById, ['name', 'registry', 'id', this.id]);
         
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
 
                 if (result[0][0] != undefined) {
-                    resolve(result[0][0]['nome']);
+                    resolve(result[0][0]['name']);
                 } else {
                     throw new Error ('Erro. Cartório informado não existe na base de dados!')
                 }
