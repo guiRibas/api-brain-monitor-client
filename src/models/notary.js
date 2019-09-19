@@ -40,12 +40,12 @@ class Notary {
         this._name = name;
     }
 
-    get api_token() {
-        return this._api_token;
+    get api_password() {
+        return this._api_password;
     }
 
-    set api_token(api_token) {
-        this._api_token = api_token;
+    set api_password(api_password) {
+        this._api_password = api_password;
     }
 
     get dedicated_server() {
@@ -56,20 +56,20 @@ class Notary {
         this._dedicated_server = dedicated_server;
     }
 
-    get bkp_web_active() {
-        return this._bkp_web_active;
+    get web_bkp_status() {
+        return this._web_bkp_status;
     }
 
-    set bkp_web_active(bkp_web_active) {
-        this._bkp_web_active = bkp_web_active;
+    set web_bkp_status(web_bkp_status) {
+        this._web_bkp_status = web_bkp_status;
     }
 
-    get bkp_web_path() {
-        return this._bkp_web_path;
+    get web_bkp_path() {
+        return this._web_bkp_path;
     }
 
-    set bkp_web_path(bkp_web_path) {
-        this._bkp_web_path = bkp_web_path;
+    set web_bkp_path(web_bkp_path) {
+        this._web_bkp_path = web_bkp_path;
     }
 
     get comments() {
@@ -83,9 +83,9 @@ class Notary {
     updateApiToken() {
         return new Promise(async (resolve, reject) => {
             try {
-                let passHash = await argon2.hash(this.api_token);
-                let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND ?? is NULL';
-                let query = connection.format(queryUpdate, ['registry', 'api_password', passHash, 'id', this.id, 'api_password']);
+                let passHash = await argon2.hash(this.api_password);
+                let queryUpdate = 'UPDATE ?? SET ?? = ? WHERE ?? = ? AND ?? = ?';
+                let query = connection.format(queryUpdate, ['registry', 'api_password', passHash, 'id', this.id, 'api_password', '']);
 
                 let result = await connection.query(query);
 
@@ -106,7 +106,7 @@ class Notary {
 
                 if (!result[0][0]) throw new Error ('Erro. Cartório informado não existe na base de dados!')
 
-                if (await argon2.verify(result[0][0]['api_password'], this.api_token)) {
+                if (await argon2.verify(result[0][0]['api_password'], this.api_password)) {
                     let currentNotary = this.id;
                     let token = sign({ foo: currentNotary }, process.env.SECRET, {
                         expiresIn: "2h"
@@ -126,8 +126,8 @@ class Notary {
         let queryUpdateWebBackup = 'UPDATE ?? SET ?? = ?, ?? = ? WHERE ?? = ?';
         let query = connection.format(queryUpdateWebBackup, 
             ['registry',
-             'web_bkp_status', this.bkp_web_active,
-             'web_bkp_path', this.bkp_web_path,
+             'web_bkp_status', this.web_bkp_status,
+             'web_bkp_path', this.web_bkp_path,
              'id', this.id],
         );
         
