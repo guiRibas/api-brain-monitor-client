@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import logger from 'morgan';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -18,6 +19,7 @@ import { validateRequest } from './middleware/validate-request';
 const app = express();
 
 app.disable('x-powered-by');
+app.use(cors());
 app.use(helmet());
 app.use(compression());
 
