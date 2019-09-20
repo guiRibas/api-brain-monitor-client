@@ -6,6 +6,7 @@ async function create (req, res) {
     requestLog.url = req.url;
     requestLog.method = req.method;
     requestLog.sender = req.headers['x-forwarded-for'];
+    requestLog.content = req.body;
 
     try {
         await requestLog.create();

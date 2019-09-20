@@ -41,11 +41,18 @@ class RequestLog {
         this._sender = sender;
     }
 
+    get content() {
+        return this._content;
+    }
+
+    set content(content) {
+	this._content = content;
+    }
+
     create() {
-        let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?)';
-        let query = connection.format(queryCreate,
-        ['request_log', 'id', 'id_registry', 'url', 'method', 'sender',
-            null, this.idNotary, this.url, this.method, this.sender]);
+        let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?)';
+        let query = connection.format(queryCreate, ['request_log', 'id', 'id_registry', 'url', 'method', 'sender', 'content',
+            null, this.idNotary, this.url, this.method, this.sender, JSON.stringify(this.content)]);
 
         return new Promise(async (resolve, reject) => {
             try {
