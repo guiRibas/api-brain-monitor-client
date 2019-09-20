@@ -50,7 +50,7 @@ app.post('/api/notary/authentication', [
 
 //ROUTES TO WEB BACKUP
 app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
-    validateMiddleware.isBoolean('active'),
+    validateMiddleware.isBoolean('status'),
     validateMiddleware.isString('path', { min: 10, max: 60 }),
     validateRequest
 ], notaryController.webBackup);
