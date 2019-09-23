@@ -1,6 +1,4 @@
-import SgbdController from './../controller/sgbd-controller';
-
-import Log from './../models/log';
+import Log from './../models/sgbd-log';
 
 async function create(req, res) {
     let log = new Log();

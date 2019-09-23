@@ -29,7 +29,7 @@ class Log {
 
     create() {
         let queryCreate = 'INSERT INTO ?? (??, ??, ??) VALUES (?, ?, ?)';
-        let query = connection.format(queryCreate, ['log', 'id', 'id_sgbd', 'content',
+        let query = connection.format(queryCreate, ['sgbd_log', 'id', 'id_sgbd', 'content',
             null, this.id_sgbd, this.description]);
 
         return new Promise(async (resolve, reject) => {
@@ -43,9 +43,9 @@ class Log {
     }
 
     findBySgbd() {
-        let queryFindByIdNotary = 'SELECT id, content FROM ?? WHERE ?? = ?';
-        let query = connection.format(queryFindByIdNotary, ['log', 'id_sgbd', this.idSgbd]);
-        
+        let queryFindByIdNotary = 'SELECT ??, ?? FROM ?? WHERE ?? = ? ORDER BY ?? DESC';
+        let query = connection.format(queryFindByIdNotary, ['content', 'created_at', 'sgbd_log', 'id_sgbd', this.idSgbd, 'id']);
+
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);

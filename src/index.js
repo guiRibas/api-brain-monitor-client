@@ -6,7 +6,7 @@ import compression from 'compression';
 
 import notaryController from './controller/notary-controller';
 import sgbdController from './controller/sgbd-controller';
-import logController from './controller/log-controller';
+import sgbdLogController from './controller/sgbd-log-controller';
 import diskController from './controller/disk-controller';
 import backupController from './controller/backup-controller';
 import repositoryController from './controller/repository-controller';
@@ -27,8 +27,6 @@ app.set('port', process.env.PORT || 8000);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-//console.log(req.headers['x-forwarded-for']);
 
 app.get('/api/notary/:id', [
     validateMiddleware.isInt('id'),
@@ -83,13 +81,13 @@ app.patch('/api/sgbd/:id', jwtMiddleware.check, [
 app.get('/api/log/sgbd/:id', jwtMiddleware.check, [
     validateMiddleware.isInt('id'),
     validateRequest
-], logController.findBySgbd);
+], sgbdLogController.findBySgbd);
 
 app.post('/api/log', jwtMiddleware.check, [
     validateMiddleware.isInt('idSgbd'),
     validateMiddleware.isString('content', 5),
     validateRequest
-], logController.create);
+], sgbdLogController.create);
 
 //ROUTES TO DISK
 app.get('/api/disks', jwtMiddleware.check, diskController.findByNotary);
