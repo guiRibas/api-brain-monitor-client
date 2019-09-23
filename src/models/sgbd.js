@@ -70,9 +70,9 @@ class Sgbd {
     create() {
         let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         let query = connection.format(queryCreate,
-        ['sgbd', 'id', 'id_notary', 'description', 'base_directory', 'data_directory', 'port', 'db_name', 'size',
+        ['sgbd', 'id', 'id_registry', 'description', 'base_directory', 'data_directory', 'port', 'db_name', 'size',
             null, this.idNotary, this.description, this.baseDirectory, this.dataDirectory, this.port, this.dbName, this.size]);
-        
+
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
@@ -86,7 +86,7 @@ class Sgbd {
     update() {
         let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id = ?';
         let query = connection.format(queryUpdate,
-        ['sgbd', 
+        ['sgbd',
             'description', this.description,
             'base_directory', this.baseDirectory,
             'data_directory', this.dataDirectory,
@@ -107,8 +107,8 @@ class Sgbd {
 
     findByNotary() {
         let queryFindByIdNotary = 'SELECT id, description, base_directory, data_directory, port, db_name, size FROM ?? WHERE ?? = ?';
-        let query = connection.format(queryFindByIdNotary, ['sgbd', 'id_notary', this.idNotary]);
-        
+        let query = connection.format(queryFindByIdNotary, ['sgbd', 'id_registry', this.idNotary]);
+
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
