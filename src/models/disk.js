@@ -56,7 +56,7 @@ class Disk {
     }
 
     set usedSpace(usedSpace) {
-        this._usedSpace = usedSpace; 
+        this._usedSpace = usedSpace;
     }
 
     get freeSpace() {
@@ -78,7 +78,7 @@ class Disk {
     create() {
         let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
         let query = connection.format(queryCreate,
-        ['disk', 'id', 'id_notary', 'label', 'type', 'filesystem', 'total_space', 'used_space', 'free_space', 'percentage_of_use',
+        ['disk', 'id', 'id_registry', 'label', 'type', 'filesystem', 'total_space', 'used_space', 'free_space', 'percentage_of_use',
             null, this.idNotary, this.label, this.type, this.filesystem, this.totalSpace, this.usedSpace, this.freeSpace, this.percentageOfUse]);
 
         return new Promise(async (resolve, reject) => {
@@ -113,10 +113,10 @@ class Disk {
     }
 
     findByNotary() {
-        let queryFindByIdNotary = 'SELECT id, label, type, filesystem, total_space, used_space, free_space, percentage_of_use FROM ?? WHERE ?? = ?';
-        let query = connection.format(queryFindByIdNotary, 
-            ['disk', 'id_notary', this.idNotary]);
-        
+        let queryFindByIdNotary = 'SELECT * FROM ?? WHERE ?? = ?';
+        let query = connection.format(queryFindByIdNotary,
+            ['disk', 'id_registry', this.idNotary]);
+
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
@@ -129,10 +129,10 @@ class Disk {
     }
 
     findByNotaryAndLabel() {
-        let queryFindByIdNotary = 'SELECT id FROM ?? WHERE ?? = ? AND ?? = ?';
-        let query = connection.format(queryFindByIdNotary, 
-            ['disk', 'id_notary', this.idNotary, 'label', this.label]);
-        
+        let queryFindByIdNotary = 'SELECT * FROM ?? WHERE ?? = ? AND ?? = ?';
+        let query = connection.format(queryFindByIdNotary,
+            ['disk', 'id_registry', this.idNotary, 'label', this.label]);
+
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);

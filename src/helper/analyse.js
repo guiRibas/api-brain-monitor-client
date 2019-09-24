@@ -1,18 +1,18 @@
 let analyseResult = (model, result) => {
     if (result['affectedRows'] == 0 && result['changedRows'] == 0) {
-        return {'status': 'Erro. ' + model + ' ainda não possui dados!'};
+        return {'code': 404, 'status': 'Erro. ' + model + ' ainda não possui dados!'};
     }
 
     if (result['affectedRows'] == 1 && result['changedRows'] == 1) {
-        return {'status': 'Info. Dados do ' + model + ' atualizados com sucesso!'};
+        return {'code': 200, 'status': 'Info. Dados do ' + model + ' atualizados com sucesso!'};
     }
 
     if (result['affectedRows'] == 1 && result['changedRows'] == 0) {
-        return {'status': 'Erro. Dados informados do ' + model + ' já constam na base de dados!'};
+        return {'code': 409, 'status': 'Erro. Dados informados do ' + model + ' já constam na base de dados!'};
     }
 
     if (result['insertId'] > 0) {
-        return {'insertId': result['insertId'], 'status': 'Info. Dados do ' + model + ' registrados com sucesso!'};
+        return {'code': 200, 'insertId': result['insertId'], 'status': 'Info. Dados do ' + model + ' registrados com sucesso!'};
     }
 }
 

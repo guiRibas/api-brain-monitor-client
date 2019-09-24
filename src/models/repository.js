@@ -83,34 +83,11 @@ class Repository {
         })
     }
 
-    update() {
-        let queryUpdate = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE id = ?';
-        let query = connection.format(queryUpdate,
-        ['repository',
-            'description', this.description,
-            'qtd_partial', this.qtdPartial,
-            'size', this.size,
-            'first_partial_at', this.firstPartialAt,
-            'last_partial_at', this.lastPartialAt,
-            'data_created_at', this.dataCreatedAt,
-            this.id]);
-
-        return new Promise(async (resolve, reject) => {
-            try {
-                let result = await connection.query(query);
-
-                resolve(analyse.analyseResult('Repositorio', result[0]));
-            } catch (err) {
-                reject(analyse.analyseError(err));
-            }
-        })
-    }
-
     findByBackup() {
-        let queryFindByIdNotary = 'SELECT id, description, size, first_partial_at, last_partial_at, data_created_at FROM ?? WHERE id_backup = ? AND DATE(created_at) = (SELECT max(DATE(created_at)) FROM repositorio WHERE id_backup = ?) ORDER BY created_at DESC';
-        let query = connection.format(queryFindByIdNotary,
-            ['repository', this.idBackup, this.idBackup]);
-        
+        let queryFindByBackup = 'SELECT ??, ??, ??, ??, ??, ?? FROM ?? WHERE ?? = ? AND DATE(created_at) = (SELECT max(DATE(created_at)) FROM repository WHERE id_backup = ?) ORDER BY created_at DESC';
+        let query = connection.format(queryFindByBackup,
+            ['id', 'description', 'size', 'first_partial_at', 'last_partial_at', 'data_created_at', 'repository', 'id_backup', this.idBackup, this.idBackup]);
+
         return new Promise(async (resolve, reject) => {
             try {
                 let result = await connection.query(query);
