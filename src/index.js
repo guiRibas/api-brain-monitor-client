@@ -54,7 +54,10 @@ app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
 ], notaryController.webBackup);
 
 //ROUTES TO SGBD
-app.get('/api/sgbd', jwtMiddleware.check, sgbdController.findByNotary);
+app.get('/api/sgbd/:id', jwtMiddleware.check, [
+    validateMiddleware.isInt('id'),
+    validateRequest
+], sgbdController.findByNotary);
 
 app.post('/api/sgbd', jwtMiddleware.check, [
     validateMiddleware.isString('description', { min: 10, max: 60 }),

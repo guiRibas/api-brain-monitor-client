@@ -48,7 +48,7 @@ async function update(req, res) {
 
 async function findByNotary(req, res) {
     let sgbd = new Sgbd();
-    sgbd.idNotary = req.decoded['foo'];
+    sgbd.idNotary = req.params['id'];
 
     try {
         let result = await sgbd.findByNotary();
