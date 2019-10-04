@@ -17,6 +17,14 @@ class RequestLog {
         this._idNotary = idNotary;
     }
 
+    get user() {
+	return this._user;
+    }
+
+    set user(user) {
+	this._user = user;
+    }
+
     get url() {
         return this._url;
     }
@@ -50,9 +58,13 @@ class RequestLog {
     }
 
     create() {
-        let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?)';
-        let query = connection.format(queryCreate, ['request_log', 'id', 'id_registry', 'url', 'method', 'sender', 'content',
-            null, this.idNotary, this.url, this.method, this.sender, JSON.stringify(this.content)]);
+	if(typeof this.idNotary == 'string') {
+	    this.idNotary = null;
+	}
+
+        let queryCreate = 'INSERT INTO ?? (??, ??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        let query = connection.format(queryCreate, ['request_log', 'id', 'id_registry', 'user', 'url', 'method', 'sender', 'content',
+            null, this.idNotary, this.user, this.url, this.method, this.sender, JSON.stringify(this.content)]);
 
         return new Promise(async (resolve, reject) => {
             try {
