@@ -47,7 +47,7 @@ async function update(req, res) {
 
 async function findByNotary(req, res) {
     let disk = new Disk();
-    disk.idNotary = req.decoded['foo'];
+    disk.idNotary = req.params.id;
 
     try {
         let result = await disk.findByNotary();

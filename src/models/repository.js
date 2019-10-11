@@ -84,9 +84,9 @@ class Repository {
     }
 
     findByBackup() {
-        let queryFindByBackup = 'SELECT ??, ??, ??, ??, ??, ?? FROM ?? WHERE ?? = ? AND DATE(created_at) = (SELECT max(DATE(created_at)) FROM repository WHERE id_backup = ?) ORDER BY created_at DESC';
+        let queryFindByBackup = 'SELECT ??, ??, ??, ??, ??, ??, ?? FROM ?? WHERE ?? = ? AND DATE(created_at) = (SELECT max(DATE(created_at)) FROM repository WHERE id_backup = ?) ORDER BY created_at DESC';
         let query = connection.format(queryFindByBackup,
-            ['id', 'description', 'size', 'first_partial_at', 'last_partial_at', 'data_created_at', 'repository', 'id_backup', this.idBackup, this.idBackup]);
+            ['id', 'description', 'qtd_partial', 'size', 'first_partial_at', 'last_partial_at', 'data_created_at', 'repository', 'id_backup', this.idBackup, this.idBackup]);
 
         return new Promise(async (resolve, reject) => {
             try {

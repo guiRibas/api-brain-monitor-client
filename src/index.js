@@ -4,6 +4,7 @@ import logger from 'morgan';
 import helmet from 'helmet';
 import compression from 'compression';
 
+import credentialController from './controller/credential-controller';
 import notaryController from './controller/notary-controller';
 import sgbdController from './controller/sgbd-controller';
 import sgbdLogController from './controller/sgbd-log-controller';
@@ -27,6 +28,18 @@ app.set('port', process.env.PORT || 8000);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.patch('/api/credential/:login/register', [
+    validateMiddleware.isString('login', { min: 5, max: 55 }),
+    validateMiddleware.isString('password', { min: 5, max: 55 }),
+    validateRequest
+], credentialController.updateApiPassword);
+
+app.post('/api/credential/authentication', [
+    validateMiddleware.isString('login', { min: 5, max: 55 }),
+    validateMiddleware.isString('password', { min: 5, max: 55 }),
+    validateRequest
+], credentialController.validateLogin);
 
 app.get('/api/notary/:id', [
     validateMiddleware.isInt('id'),
@@ -54,7 +67,10 @@ app.patch('/api/notary/:id/web-backup', jwtMiddleware.check, [
 ], notaryController.webBackup);
 
 //ROUTES TO SGBD
-app.get('/api/sgbd', jwtMiddleware.check, sgbdController.findByNotary);
+app.get('/api/sgbd/:id', jwtMiddleware.check, [
+    validateMiddleware.isInt('id'),
+    validateRequest
+], sgbdController.findByNotary);
 
 app.post('/api/sgbd', jwtMiddleware.check, [
     validateMiddleware.isString('description', { min: 10, max: 60 }),
@@ -90,7 +106,10 @@ app.post('/api/log', jwtMiddleware.check, [
 ], sgbdLogController.create);
 
 //ROUTES TO DISK
-app.get('/api/disks', jwtMiddleware.check, diskController.findByNotary);
+app.get('/api/disks/notary/:id', jwtMiddleware.check, [
+    validateMiddleware.isInt('id'),
+    validateRequest
+], diskController.findByNotary);
 
 app.get('/api/disk/label/:label', jwtMiddleware.check, [
     validateMiddleware.isString('label', { min: 1, max: 2 }),
