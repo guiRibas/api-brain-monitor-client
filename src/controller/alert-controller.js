@@ -6,6 +6,8 @@ async function create(idRegistry, errorType, description) {
   alert.errorType = errorType;
   alert.description = description;
 
+  console.log(idRegistry + " " + errorType + " " + description);
+
   try {
     let result = await alert.create();
 

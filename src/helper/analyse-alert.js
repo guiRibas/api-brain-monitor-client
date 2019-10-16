@@ -11,6 +11,16 @@ async function check(idRegistry, label, risk) {
   alertController.create(idRegistry, errorType, description);
 }
 
+async function checkRepository(idRegistry, description, qtdBase) {
+  let errorType = 'Repo' + description;
+  let newDesc = 'Repositório ' + description + ' contem ' + qtdBase + ' backups base';
+
+  if (qtdBase < 3) return;
+
+  alertController.create(idRegistry, errorType, newDesc);
+}
+
 module.exports = {
-  check: check
+  check: check,
+  checkRepository: checkRepository
 }
