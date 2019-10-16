@@ -112,7 +112,7 @@ app.get('/api/disks/notary/:id', jwtMiddleware.check, [
 ], diskController.findByNotary);
 
 app.get('/api/disk/label/:label', jwtMiddleware.check, [
-    validateMiddleware.isString('label', { min: 1, max: 2 }),
+    validateMiddleware.isString('label', { min: 1, max: 1 }),
     validateRequest
 ], diskController.findByNotaryAndLabel);
 
