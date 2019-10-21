@@ -84,6 +84,21 @@ class Alert {
       }
     })
   }
+
+  findAllByNotary() {
+    let queryFindAll = 'SELECT * FROM ?? WHERE ?? = ? ORDER BY situation ASC, ignored, updated_at DESC LIMIT ?';
+    let query = connection.format(queryFindAll,
+      ['alert', 'id_registry', this.idRegistry, 10]);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await connection.query(query);
+        resolve(result[0]);
+      } catch (err) {
+        reject();
+      }
+    })
+  }
 }
 
 export default Alert;

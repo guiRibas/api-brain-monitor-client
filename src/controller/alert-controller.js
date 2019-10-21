@@ -6,8 +6,6 @@ async function create(idRegistry, errorType, description) {
   alert.errorType = errorType;
   alert.description = description;
 
-  console.log(idRegistry + " " + errorType + " " + description);
-
   try {
     let result = await alert.create();
 
@@ -30,7 +28,24 @@ async function findIgnoredAlerts(idRegistry, errorType) {
   }
 }
 
+async function findAllByNotary(req, res) {
+  let alert = new Alert();
+  alert.idRegistry = req.params.id;
+
+  try {
+      let result = await alert.findAllByNotary();
+      return res.status(200).json({
+          message: result
+      })
+  } catch (err) {
+      return res.status(500).json({
+          message: err.message
+      })
+  }
+}
+
 module.exports = {
   create: create,
-  findIgnoredAlerts: findIgnoredAlerts
+  findIgnoredAlerts: findIgnoredAlerts,
+  findAllByNotary: findAllByNotary
 }
