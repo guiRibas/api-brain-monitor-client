@@ -1,7 +1,5 @@
 import Repository from './../models/repository';
 
-import analyseAlert from '../helper/analyse-alert';
-
 async function create(req, res) {
   let repository = new Repository();
   repository.idBackup = req.body.idBackup;
@@ -11,8 +9,6 @@ async function create(req, res) {
   repository.firstPartialAt = req.body.firstPartialAt;
   repository.lastPartialAt = req.body.lastPartialAt;
   repository.dataCreatedAt = req.body.dataCreatedAt;
-
-  analyseAlert.checkRepository(req.decoded['foo'], req.body.description, req.body.qtdPartial);
 
   try {
     let result = await repository.create();
