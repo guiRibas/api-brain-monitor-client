@@ -65,8 +65,8 @@ class Credential {
     }
 
     authenticate() {
-	let queryFindApiPassword = 'SELECT ?? FROM ?? WHERE ?? = ?';
-	let query = connection.format(queryFindApiPassword, ['api_password', 'credential', 'login', this.login]);
+	let queryFindApiPassword = 'SELECT ??, ?? FROM ?? WHERE ?? = ?';
+	let query = connection.format(queryFindApiPassword, ['id', 'api_password', 'credential', 'login', this.login]);
 
 	return new Promise(async (resolve, reject) => {
 	    try {
@@ -75,7 +75,7 @@ class Credential {
 		if (!result[0][0]) throw new Error('Erro. Credencial informada não existe na base de dados!')
 
 		if (await argon2.verify(result[0][0]['api_password'], this.apiPassword)) {
-		    let currentCredential = this.login;
+		    let currentCredential = result[0][0]['id'];
 		    let token = sign({ foo: currentCredential }, process.env.SECRET, {
 			expiresIn: "2h"
 		    })
