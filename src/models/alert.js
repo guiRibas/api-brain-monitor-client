@@ -22,6 +22,14 @@ class Alert {
     this._idRegistry = idRegistry;
   }
 
+  get idCredential() {
+    return this._idCredential;
+  }
+
+  set idCredential(idCredential) {
+    this._idCredential = idCredential;
+  }
+
   get errorType() {
     return this._errorType;
   }
@@ -65,7 +73,7 @@ class Alert {
         let result = await connection.query(query);
         resolve();
       } catch (err) {
-        reject();
+        reject(err);
       }
     })
   }
@@ -80,13 +88,13 @@ class Alert {
         let result = await connection.query(query);
         resolve(result[0][0]['total']);
       } catch (err) {
-        reject();
+        reject(err);
       }
     })
   }
 
   findAllByNotary() {
-    let queryFindAll = 'SELECT * FROM ?? WHERE ?? = ? ORDER BY situation ASC, ignored, updated_at DESC LIMIT ?';
+    let queryFindAll = 'SELECT * FROM ?? WHERE ?? = ? ORDER BY situation ASC, ignored, created_at LIMIT ?';
     let query = connection.format(queryFindAll,
       ['alert', 'id_registry', this.idRegistry, 10]);
 
@@ -95,7 +103,37 @@ class Alert {
         let result = await connection.query(query);
         resolve(result[0]);
       } catch (err) {
-        reject();
+        reject(err);
+      }
+    })
+  }
+
+  setCurrentSituation() {
+    let querySituation = 'UPDATE ?? SET ?? = ?, ?? = ?, ?? = ? WHERE ?? = ?';
+    let query = connection.format(querySituation,
+      ['alert', 'id_credential', this.idCredential, 'situation', this.situation, 'ignored', this.ignored, 'id', this.id]);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await connection.query(query);
+        resolve(result[0]);
+      } catch (err) {
+        reject(err);
+      }
+    })
+  }
+
+  setCurrentIgnored() {
+    let queryIgnored = 'UPDATE ?? SET ?? = ?, ?? = ? WHERE ?? = ?';
+    let query = connection.format(queryIgnored,
+      ['alert', 'id_credential', this.idCredential, 'ignored', this.ignored, 'id', this.id]);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await connection.query(query);
+        resolve(result[0]);
+      } catch (err) {
+        reject(err);
       }
     })
   }

@@ -186,11 +186,23 @@ app.post('/api/repository', jwtMiddleware.check, [
   validateRequest
 ], repositoryController.create);
 
-//ROUTES TO ALERT4
+//ROUTES TO ALERT
 app.get('/api/alerts/notary/:id', jwtMiddleware.check, [
   validateMiddleware.isInt('id'),
   validateRequest
 ], alertController.findAllByNotary);
+
+app.patch('/api/alert/:id/situation/:situation', jwtMiddleware.check, [
+  validateMiddleware.isInt('id'),
+  validateMiddleware.isString('situation', { min: 8, max: 10 }),
+  validateRequest
+], alertController.setCurrentSituation);
+
+app.patch('/api/alert/:id/ignored/:ignored', jwtMiddleware.check, [
+  validateMiddleware.isInt('id'),
+  validateMiddleware.isString('ignored', { min: 2, max: 3 }),
+  validateRequest
+], alertController.setCurrentIgnored);
 
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ' + app.get('port'));
