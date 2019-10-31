@@ -51,8 +51,6 @@ async function setCurrentSituation(req, res) {
   alert.situation = req.params.situation;
   alert.ignored = 'no';
 
-  console.log(req.decoded['foo']);
-
   try {
     let result = await alert.setCurrentSituation();
     return res.status(200).json({

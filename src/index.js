@@ -17,6 +17,7 @@ import validateTokenToCheckId from './middleware/token-middleware';
 import jwtMiddleware from './middleware/jwt-middleware';
 import validateMiddleware from './middleware/validate-middleware';
 import { validateRequest } from './middleware/validate-request';
+import rateLimit from './middleware/rate-limit-middleware.js';
 
 const app = express();
 
@@ -30,31 +31,31 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.patch('/api/credential/:login/register', [
+app.patch('/api/credential/:login/register', rateLimit.credentialLimiter, [
   validateMiddleware.isString('login', { min: 5, max: 55 }),
   validateMiddleware.isString('password', { min: 5, max: 55 }),
   validateRequest
 ], credentialController.updateApiPassword);
 
-app.post('/api/credential/authentication', [
+app.post('/api/credential/authentication', rateLimit.credentialLimiter, [
   validateMiddleware.isString('login', { min: 5, max: 55 }),
   validateMiddleware.isString('password', { min: 5, max: 55 }),
   validateRequest
 ], credentialController.validateLogin);
 
-app.get('/api/notary/:id', [
+app.get('/api/notary/:id', rateLimit.notaryLimiter, [
   validateMiddleware.isInt('id'),
   validateRequest
 ], notaryController.checkId);
 
-app.patch('/api/notary/:id/register', [
+app.patch('/api/notary/:id/register', rateLimit.notaryLimiter, [
   validateTokenToCheckId,
   validateMiddleware.isInt('id'),
   validateMiddleware.isString('password'),
   validateRequest
 ], notaryController.updateToken);
 
-app.post('/api/notary/authentication', [
+app.post('/api/notary/authentication', rateLimit.notaryLimiter, [
   validateMiddleware.isInt('id'),
   validateMiddleware.isString('password'),
   validateRequest
@@ -205,7 +206,7 @@ app.patch('/api/alert/:id/ignored/:ignored', jwtMiddleware.check, [
 ], alertController.setCurrentIgnored);
 
 app.listen(app.get('port'), function () {
-    console.log('Node app is running on port: ' + app.get('port'));
+  console.log('Node app is running on port: ' + app.get('port'));
 });
 
 export default app;
