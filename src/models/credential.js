@@ -84,7 +84,7 @@ class Credential {
             expiresIn: "2h"
           })
 
-          resolve(token);
+          resolve({ 'id': currentCredential, 'token': token });
         }
 
         throw new Error('Usuário e/ou Senha podem estar incorretos');
