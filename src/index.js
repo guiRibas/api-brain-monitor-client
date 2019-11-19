@@ -12,6 +12,8 @@ import diskController from './controller/disk-controller';
 import backupController from './controller/backup-controller';
 import repositoryController from './controller/repository-controller';
 import alertController from './controller/alert-controller';
+import employeeController from './controller/employee-controller';
+import pageController from './controller/page-controller';
 
 import validateTokenToCheckId from './middleware/token-middleware';
 import jwtMiddleware from './middleware/jwt-middleware';
@@ -31,6 +33,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+//ROUTES TO CREDENTIAL
 app.patch('/api/credential/:login/register', rateLimit.credentialLimiter, [
   validateMiddleware.isString('login', { min: 5, max: 55 }),
   validateMiddleware.isString('password', { min: 5, max: 55 }),
@@ -43,6 +46,7 @@ app.post('/api/credential/authentication', rateLimit.credentialLimiter, [
   validateRequest
 ], credentialController.validateLogin);
 
+//ROUTES TO NOTARY
 app.get('/api/notary/:id', rateLimit.notaryLimiter, [
   validateMiddleware.isInt('id'),
   validateRequest
